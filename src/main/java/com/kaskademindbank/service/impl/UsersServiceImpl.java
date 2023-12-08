@@ -4,12 +4,11 @@ import com.kaskademindbank.entity.Users;
 import com.kaskademindbank.mapper.UsersMapper;
 import com.kaskademindbank.service.IUsersService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 
 /**
- * <p>
- *  服务实现类
- * </p>
  *
  * @author ZiyuanZhou
  * @since 2023-11-28
@@ -17,4 +16,61 @@ import org.springframework.stereotype.Service;
 @Service
 public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements IUsersService {
 
+    @Autowired
+    private UsersMapper usersMapper;
+
+    @Override
+    public String login(Users user, Model model) {
+        System.out.println(user);
+        String username = user.getUserName();
+        String password = user.getPassword();
+        if (username == null || password == null) {
+            model.addAttribute("error", "Username and password are required");
+            return "login";
+        }
+
+        Users foundUser = usersMapper.findByUsername(username);
+        if (foundUser == null || !foundUser.getPassword().equals(password)) {
+            model.addAttribute("error", "Invalid username or password");
+            return "login";
+        }
+
+        model.addAttribute("username", username);
+
+        return "import";
+    }
+
+    @Override
+    public String register(Users user, Model model) {
+
+        String username = user.getUserName();
+        String password = user.getPassword();
+        String email = user.getEmail();
+
+        if (username == null || password == null || email == null) {
+            model.addAttribute("error", "Username, password, and email are required");
+            return "register";
+        }
+
+        Users foundUser = usersMapper.findByUsername(username);
+        if (foundUser != null) {
+            model.addAttribute("error", "Username already exists");
+            return "register";
+        }
+
+        foundUser = usersMapper.findByEmail(email);
+        if (foundUser != null) {
+            model.addAttribute("error", "Email already exists");
+            return "register";
+        }
+
+        Users newUser = new Users();
+        newUser.setUserName(username);
+        newUser.setPassword(password);
+        newUser.setEmail(email);
+        usersMapper.insert(newUser);
+
+        return "login";
+    }
 }
+

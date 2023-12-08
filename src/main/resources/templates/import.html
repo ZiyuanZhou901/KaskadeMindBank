@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="">
+<head>
+
+    <meta charset="utf-8">
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
+    <meta content="" name="description">
+    <meta content="ZiyuanZhou" name="author">
+
+    <base th:href="@{/}">
+    <title>课程列表</title>
+
+    <!-- Custom fonts for this template-->
+    <link rel="stylesheet" th:href="@{/vendor/fontawesome-free/css/all.min.css}" type="text/css">
+    <link
+            href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+            rel="stylesheet">
+
+    <!-- Custom styles for this template-->
+    <link rel="stylesheet" th:href="@{/css/argon-dashboard.css}">
+
+</head>
+
+<body id="page-top">
+
+<!-- Page Wrapper -->
+<div id="wrapper">
+
+    <!-- Sidebar -->
+    <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+
+        <!-- Sidebar - Brand -->
+        <a class="sidebar-brand d-flex align-items-center justify-content-center" th:href="@{index}">
+            <div class="sidebar-brand-icon rotate-n-15">
+                <i class="fas fa-laugh-wink"></i>
+            </div>
+            <div class="sidebar-brand-text mx-3">E-Exercise</div>
+        </a>
+
+        <!-- Divider -->
+        <hr class="sidebar-divider">
+
+        <!-- Nav Item -->
+        <div class="sidebar-heading">
+            用户功能
+        </div>
+
+        <!-- Heading -->
+        <li class="nav-item">
+            <a class="nav-link" th:href="@{index}">
+                <i class="fas fa-fw fa-tachometer-alt"></i>
+                <span>我的主页</span></a>
+        </li>
+
+        <!-- Nav Item -->
+        <li class="nav-item active">
+            <a class="nav-link" th:href="@{/knowledge/list}">
+                <i class="fas fa-fw fa-folder"></i>
+                <span>课程列表</span></a>
+        </li>
+
+<!--        <div th:if="${user.usertype} ne '1'">
+            &lt;!&ndash; Divider &ndash;&gt;
+            <hr class="sidebar-divider">
+
+            &lt;!&ndash; Heading &ndash;&gt;
+            <div class="sidebar-heading">
+                管理员功能
+            </div>
+
+            &lt;!&ndash; Nav Item &ndash;&gt;
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/knowledge/subject/toAdd}">
+                    <i class="fas fa-fw fa-wrench"></i>
+                    <span>添加课程</span></a>
+            </li>
+
+            &lt;!&ndash; Nav Item &ndash;&gt;
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/knowledge/toAddImage}">
+                    <i class="fas fa-fw fa-chart-area"></i>
+                    <span>我的图库</span></a>
+            </li>
+        </div>-->
+
+        <!-- Divider -->
+        <hr class="sidebar-divider d-none d-md-block">
+
+        <!-- Sidebar Toggler (Sidebar) -->
+        <div class="text-center d-none d-md-inline">
+            <button class="rounded-circle border-0" id="sidebarToggle"></button>
+        </div>
+
+    </ul>
+    <!-- End of Sidebar -->
+
+    <!-- Content Wrapper -->
+    <div class="d-flex flex-column" id="content-wrapper">
+
+        <!-- Main Content -->
+        <div id="content">
+
+            <!-- Topbar -->
+            <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+
+                <!-- Sidebar Toggle (Topbar) -->
+                <button class="btn btn-link d-md-none rounded-circle mr-3" id="sidebarToggleTop">
+                    <i class="fa fa-bars"></i>
+                </button>
+
+
+                <!-- Topbar Navbar -->
+                <ul class="navbar-nav ml-auto">
+
+                    <!-- Nav Item - User Information -->
+                    <li class="nav-item dropdown no-arrow">
+                        <a aria-expanded="false" aria-haspopup="true" class="nav-link dropdown-toggle"
+                           data-toggle="dropdown"
+                           href="#" id="userDropdown" role="button">
+                            <!--<div th:switch="${user.usertype}">
+                                <span class="mr-2 d-none d-lg-inline text-gray-600 small" th:case="0"
+                                      th:text="${user.username + '，您的身份是管理员'}"></span>
+                                <span class="mr-2 d-none d-lg-inline text-gray-600 small" th:case="1"
+                                      th:text="${user.username + '，您的身份是学生'}"></span>
+                                <span class="mr-2 d-none d-lg-inline text-gray-600 small" th:case="2"
+                                      th:text="${user.username + '，您的身份是教师'}"></span>
+                            </div>-->
+                            <img class="img-profile rounded-circle"
+                                 src="img/undraw_profile.svg" alt="">
+                        </a>
+                        <!-- Dropdown - User Information -->
+                        <div aria-labelledby="userDropdown"
+                             class="dropdown-menu dropdown-menu-right shadow animated--grow-in">
+                            <a class="dropdown-item" data-target="#logoutModal" data-toggle="modal" href="#">
+                                <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                                退出系统
+                            </a>
+                        </div>
+                    </li>
+
+                </ul>
+
+            </nav>
+            <!-- End of Topbar -->
+
+            <!-- Begin Page Content -->
+            <div class="container-fluid">
+
+                <!-- Page Heading -->
+                <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                    <h1 class="h3 mb-0 text-gray-800">课程列表</h1>
+                </div>
+
+                <!-- Dropdown Card -->
+                <div class="card shadow mb-4" th:each="subject: ${subjects}">
+                    <!-- Card Header - Dropdown -->
+                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                        <h6 class="m-0 font-weight-bold text-primary" th:text="${subject.name}"></h6>
+                        <div class="dropdown no-arrow">
+                            <a aria-expanded="false" aria-haspopup="true" class="dropdown-toggle"
+                               data-toggle="dropdown"
+                               href="#" role="button">
+                                <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                            </a>
+<!--                            <div aria-labelledby="dropdownMenuLink"
+                                 class="dropdown-menu dropdown-menu-right shadow animated&#45;&#45;fade-in">
+                                <div class="dropdown-header" th:text="${subject.name}"></div>
+                                <a class="dropdown-item"
+                                   th:href="@{knowledge/subject} + '?id=' + ${subject.id}">查看课程</a>
+                                &lt;!&ndash;<a class="dropdown-item"&ndash;&gt;
+                                &lt;!&ndash;th:href="@{exercise/subject} + '?id=' + ${subject.id}">查看习题</a>&ndash;&gt;
+                            </div>-->
+                        </div>
+                    </div>
+                    <!-- Card Body -->
+                    <div class="card-body" th:id="${'card-body-' + subject.id}"></div>
+                </div>
+
+            </div>
+            <!-- /.container-fluid -->
+
+        </div>
+        <!-- End of Main Content -->
+
+        <!-- Footer -->
+        <footer class="sticky-footer bg-white">
+            <div class="container my-auto">
+                <div class="copyright text-center my-auto">
+                    <span>Copyright &copy; ZiyuanZhou 2023</span>
+                </div>
+            </div>
+        </footer>
+        <!-- End of Footer -->
+
+    </div>
+    <!-- End of Content Wrapper -->
+
+</div>
+<!-- End of Page Wrapper -->
+
+<!-- Scroll to Top Button-->
+<a class="scroll-to-top rounded" href="#page-top">
+    <i class="fas fa-angle-up"></i>
+</a>
+
+<!-- Logout Modal-->
+<div aria-hidden="true" aria-labelledby="exampleModalLabel" class="modal fade" id="logoutModal" role="dialog"
+     tabindex="-1">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">提示框</h5>
+                <button aria-label="Close" class="close" data-dismiss="modal" type="button">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">确认退出？</div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-dismiss="modal" type="button">取消</button>
+                <a class="btn btn-primary" th:href="@{/user/toLogin}">确认</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap core JavaScript-->
+<script src="vendor/jquery/jquery.min.js"></script>
+<script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+<!-- Core plugin JavaScript-->
+<script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+
+<!-- Custom scripts for all pages-->
+<script src="js/sb-admin-2.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+
+    /*[# th:each="subject : ${subjects}"]*/
+    var id = /*[[${'card-body-' + subject.id}]]*/ 'card-body-0';
+    var content = /*[[${subject.introduction}]]*/ '暂无内容。';
+    document.getElementById(id).innerHTML = marked.parse(content);
+    /*[/]*/
+
+    /*]]>*/
+
+</script>
+
+</body>
+
+</html>

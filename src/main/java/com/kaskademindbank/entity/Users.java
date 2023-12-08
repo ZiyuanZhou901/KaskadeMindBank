@@ -2,13 +2,12 @@ package com.kaskademindbank.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
+
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 
 /**
- * <p>
- * 
- * </p>
- *
  * @author ZiyuanZhou
  * @since 2023-11-28
  */
@@ -19,10 +18,13 @@ public class Users implements Serializable {
     @TableId(value = "userId", type = IdType.AUTO)
     private Integer userId;
 
+    @NotBlank(message = "用户名不能为空！")
     private String userName;
 
+    @NotBlank(message = "密码不能为空！")
     private String password;
-
+    @NotBlank(message = "邮箱不能为空！")
+    @Email(message = "邮箱格式错误！")
     private String email;
 
     public Integer getUserId() {
@@ -66,4 +68,5 @@ public class Users implements Serializable {
         ", email = " + email +
         "}";
     }
+
 }
