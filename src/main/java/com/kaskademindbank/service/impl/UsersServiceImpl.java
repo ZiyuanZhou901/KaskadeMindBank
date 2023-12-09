@@ -4,6 +4,7 @@ import com.kaskademindbank.entity.Users;
 import com.kaskademindbank.mapper.UsersMapper;
 import com.kaskademindbank.service.IUsersService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
@@ -20,7 +21,7 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements
     private UsersMapper usersMapper;
 
     @Override
-    public String login(Users user, Model model) {
+    public String login(Users user, Model model, HttpSession session) {
         System.out.println(user);
         String username = user.getUserName();
         String password = user.getPassword();
@@ -35,9 +36,9 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements
             return "login";
         }
 
-        model.addAttribute("username", username);
+        session.setAttribute("user", user);
 
-        return "import";
+        return "redirect:/import";
     }
 
     @Override

@@ -36,7 +36,7 @@ public class SelectQuestion implements Serializable {
 
     private Integer userId;
 
-    private String wCollect;
+    private Integer wCollect;
 
     private LocalDateTime upTime;
 
@@ -116,11 +116,11 @@ public class SelectQuestion implements Serializable {
         this.userId = userId;
     }
 
-    public String getwCollect() {
+    public Integer getwCollect() {
         return wCollect;
     }
 
-    public void setwCollect(String wCollect) {
+    public void setwCollect(Integer wCollect) {
         this.wCollect = wCollect;
     }
 

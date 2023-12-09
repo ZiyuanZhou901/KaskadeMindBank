@@ -2,6 +2,8 @@ package com.kaskademindbank.service;
 
 import com.kaskademindbank.entity.JudgeQuestion;
 import com.baomidou.mybatisplus.extension.service.IService;
+import jakarta.servlet.http.HttpSession;
+import org.springframework.ui.Model;
 
 /**
  * <p>
@@ -13,4 +15,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IJudgeQuestionService extends IService<JudgeQuestion> {
 
+    String importByTemplate(JudgeQuestion judgeQuestion, Model model, HttpSession session);
 }

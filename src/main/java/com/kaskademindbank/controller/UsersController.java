@@ -2,6 +2,7 @@ package com.kaskademindbank.controller;
 
 import com.kaskademindbank.entity.Users;
 import com.kaskademindbank.service.IUsersService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -29,11 +30,11 @@ public class UsersController {
     }
 
     @PostMapping("/login")
-    public String login(@ModelAttribute("user") @Validated Users user, BindingResult result, Model model) {
+    public String login(@ModelAttribute("user") @Validated Users user, BindingResult result, Model model, HttpSession session) {
         if (result.hasErrors()) {
             return "login";
         }
-        return usersService.login(user,model);
+        return usersService.login(user,model,session);
     }
 
     @GetMapping("/register")

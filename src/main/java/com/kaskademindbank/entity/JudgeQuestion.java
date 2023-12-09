@@ -22,13 +22,13 @@ public class JudgeQuestion implements Serializable {
 
     private String subject;
 
-    private String descripstion;
+    private String description;
 
-    private byte[] answer;
+    private String answer;
 
     private Integer userId;
 
-    private byte[] wCollect;
+    private Integer wCollect;
 
     private LocalDateTime upTime;
 
@@ -52,19 +52,19 @@ public class JudgeQuestion implements Serializable {
         this.subject = subject;
     }
 
-    public String getDescripstion() {
-        return descripstion;
+    public String getDescription() {
+        return description;
     }
 
-    public void setDescripstion(String descripstion) {
-        this.descripstion = descripstion;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
-    public byte[] getAnswer() {
+    public String getAnswer() {
         return answer;
     }
 
-    public void setAnswer(byte[] answer) {
+    public void setAnswer(String answer) {
         this.answer = answer;
     }
 
@@ -76,11 +76,11 @@ public class JudgeQuestion implements Serializable {
         this.userId = userId;
     }
 
-    public byte[] getwCollect() {
+    public Integer getwCollect() {
         return wCollect;
     }
 
-    public void setwCollect(byte[] wCollect) {
+    public void setwCollect(Integer wCollect) {
         this.wCollect = wCollect;
     }
 
@@ -113,7 +113,7 @@ public class JudgeQuestion implements Serializable {
         return "JudgeQuestion{" +
         "jquestionId = " + jquestionId +
         ", subject = " + subject +
-        ", descripstion = " + descripstion +
+        ", description = " + description +
         ", answer = " + answer +
         ", userId = " + userId +
         ", wCollect = " + wCollect +

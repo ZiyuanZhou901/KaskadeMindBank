@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fill Question Import</title>
+    <h6 class="font-weight-bolder text-white mb-0">Hi~ <span th:text="${user.userName}"></span></h6>
+    <h6 class="font-weight-bolder text-white mb-0">Hi~ <span th:text="${questionType}"></span></h6>
+</head>
+
+<body>
+
+    <!-- Display error message if there is any -->
+    <div th:if="${error}" class="error-message">
+        <p th:text="${error}"></p>
+    </div>
+
+    <!-- Display success message if there is any -->
+    <div th:if="${successMessage}" class="success-message">
+        <p th:text="${successMessage}"></p>
+    </div>
+
+    <!-- Fill Question Import Form -->
+    <form th:action="@{/import/template/fillQuestion}" th:object="${fillQuestion}" method="post">
+        <!-- Subject Field -->
+        <label for="subject">Subject:</label>
+        <input type="text" id="subject" name="subject" th:field="*{subject}" required>
+        <br>
+
+        <!-- Description Field -->
+        <label for="description">Description:</label>
+        <input type="text" id="description" name="description" th:field="*{description}" required>
+        <br>
+
+        <!-- Answer Field -->
+        <label for="answer">Answer:</label>
+        <input type="text" id="answer" name="answer" th:field="*{answer}" required>
+        <br>
+
+        <!-- Other Fields, if needed -->
+
+        <!-- Submit Button -->
+        <button type="submit">Import</button>
+    </form>
+
+</body>
+
+</html>

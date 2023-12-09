@@ -2,13 +2,12 @@ package com.kaskademindbank.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
+import lombok.Builder;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * <p>
- * 
- * </p>
  *
  * @author ZiyuanZhou
  * @since 2023-11-28
@@ -28,7 +27,8 @@ public class FillQuestion implements Serializable {
 
     private Integer userId;
 
-    private String wCollect;
+
+    private Integer wCollect;
 
     private LocalDateTime upTime;
 
@@ -76,11 +76,11 @@ public class FillQuestion implements Serializable {
         this.userId = userId;
     }
 
-    public String getwCollect() {
+    public Integer getwCollect() {
         return wCollect;
     }
 
-    public void setwCollect(String wCollect) {
+    public void setwCollect(Integer wCollect) {
         this.wCollect = wCollect;
     }
 
