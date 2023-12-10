@@ -35,7 +35,7 @@ public class JudgeQuestion implements Serializable {
     private String picFile;
 
     private String voiFile;
-
+    private String vidFile;
     public Integer getJquestionId() {
         return jquestionId;
     }
@@ -108,6 +108,12 @@ public class JudgeQuestion implements Serializable {
         this.voiFile = voiFile;
     }
 
+    public String getVidFile() {
+        return vidFile;
+    }
+    public void setVidFile(String vidFile) {
+        this.vidFile = vidFile;
+    }
     @Override
     public String toString() {
         return "JudgeQuestion{" +

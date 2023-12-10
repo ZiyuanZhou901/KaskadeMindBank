@@ -4,6 +4,10 @@ import com.kaskademindbank.entity.SelectQuestion;
 import com.baomidou.mybatisplus.extension.service.IService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 /**
  * <p>
@@ -15,5 +19,11 @@ import org.springframework.ui.Model;
  */
 public interface ISelectQuestionService extends IService<SelectQuestion> {
 
-    String importByTemplate(SelectQuestion selectQuestion, Model model, HttpSession session);
+    String importByTemplate(SelectQuestion selectQuestion, Model model,
+                            HttpSession session,
+                            @RequestParam("imageFile") MultipartFile imageFile,
+                            @RequestParam("audioFile") MultipartFile audioFile,
+                            @RequestParam("videoFile") MultipartFile videoFile);
+
+    List<String> getUploadedSubjectsByUserId(Integer userId);
 }

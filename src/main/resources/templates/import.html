@@ -97,9 +97,13 @@
             data-scroll="false">
             <div class="container-fluid py-1 px-3">
                 <nav aria-label="breadcrumb">
-                    <h6 class="font-weight-bolder text-white mb-0">Hi~ <span th:text="${user.userName}"></span>
-                    </h6>
+                    <h6 class="font-weight-bolder text-white mb-0">Hi~ <span th:text="${user.userName}"></span></h6>
+                    <div th:if="${successMessage}" class="successMessage text-white">
+                        <p th:text="${successMessage}"></p>
+                    </div>
                 </nav>
+
+
 
             </div>
         </nav>
@@ -119,7 +123,6 @@
                             </p>
                         </div>
                         <div class="card-body p-3">
-                            <!-- 此处我想插入一个背景图片 -->
                             <div class="mt-3">
                                 <div class="d-flex flex-column">
                                     <div class="mb-2">

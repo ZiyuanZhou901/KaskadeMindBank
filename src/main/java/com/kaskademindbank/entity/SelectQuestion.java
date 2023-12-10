@@ -43,6 +43,7 @@ public class SelectQuestion implements Serializable {
     private String picFile;
 
     private String voiFile;
+    private String vidFile;
 
     public Integer getSquestionId() {
         return squestionId;
@@ -142,6 +143,14 @@ public class SelectQuestion implements Serializable {
 
     public String getVoiFile() {
         return voiFile;
+    }
+
+    public String getVidFile() {
+        return vidFile;
+    }
+
+    public void setVidFile(String vidFile) {
+        this.vidFile = vidFile;
     }
 
     public void setVoiFile(String voiFile) {

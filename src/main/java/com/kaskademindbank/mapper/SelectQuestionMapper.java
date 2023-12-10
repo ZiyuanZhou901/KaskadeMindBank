@@ -3,6 +3,10 @@ package com.kaskademindbank.mapper;
 import com.kaskademindbank.entity.SelectQuestion;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
+
+import java.util.List;
 
 /**
  * <p>
@@ -14,5 +18,6 @@ import org.apache.ibatis.annotations.Mapper;
  */
 @Mapper
 public interface SelectQuestionMapper extends BaseMapper<SelectQuestion> {
-
+    @Select("SELECT DISTINCT subject FROM selectQuestion WHERE userId = #{userId}")
+    List<String> findSubjectsByUserId(@Param("userId") Integer userId);
 }
