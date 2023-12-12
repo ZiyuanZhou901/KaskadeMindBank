@@ -25,3 +25,9 @@ mybatis-plus:
 
 file:
   path: /Users/23Fall/JAVA/finalProj/KaskadeMindBank/upload/
+
+pagehelper:
+  helper-dialect: mysql
+  reasonable: true
+  support-methods-arguments: true
+  params: count=countsql

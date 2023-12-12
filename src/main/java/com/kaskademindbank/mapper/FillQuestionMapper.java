@@ -21,4 +21,6 @@ public interface FillQuestionMapper extends BaseMapper<FillQuestion> {
 
     @Select("SELECT DISTINCT subject FROM fillQuestion WHERE userId = #{userId}")
     List<String> findSubjectsByUserId(@Param("userId") Integer userId);
+    @Select("SELECT * FROM fillQuestion WHERE userId = #{userId}")
+    List<FillQuestion> findFillQuestionsByUserId(Integer userIdByUsername);
 }

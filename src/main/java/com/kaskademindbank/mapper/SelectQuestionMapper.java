@@ -20,4 +20,6 @@ import java.util.List;
 public interface SelectQuestionMapper extends BaseMapper<SelectQuestion> {
     @Select("SELECT DISTINCT subject FROM selectQuestion WHERE userId = #{userId}")
     List<String> findSubjectsByUserId(@Param("userId") Integer userId);
+    @Select("SELECT * FROM selectQuestion WHERE userId = #{userId}")
+    List<SelectQuestion> findSelectQuestionsByUserId(Integer userIdByUsername);
 }
