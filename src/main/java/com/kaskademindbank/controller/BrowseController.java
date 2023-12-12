@@ -46,12 +46,10 @@ public class BrowseController {
         List<FillQuestion> fillQuestions = fillQuestionMapper.findFillQuestionsByUserId(usersMapper.findUserIdByUsername(user.getUserName()));
         List<JudgeQuestion> judgeQuestions = judgeQuestionMapper.findJudgeQuestionsByUserId(usersMapper.findUserIdByUsername(user.getUserName()));
         List<SelectQuestion> selectQuestions = selectQuestionMapper.findSelectQuestionsByUserId(usersMapper.findUserIdByUsername(user.getUserName()));
-
-        List<QuestionOverview> allQuestions = new ArrayList<>();
         List<QuestionOverview> fillQuestionOverviews = fillQuestions.stream()
-                .map(q -> new QuestionOverview("Fill", q.getfquestionId(), q.getSubject(), q.getDescription(), q.getUpTime()))
+                .map(q -> new QuestionOverview("Fill", q.getFquestionId(), q.getSubject(), q.getDescription(), q.getUpTime()))
                 .toList();
-        allQuestions.addAll(fillQuestionOverviews);
+        List<QuestionOverview> allQuestions = new ArrayList<>(fillQuestionOverviews);
 
         // 判断题
         List<QuestionOverview> judgeQuestionOverviews = judgeQuestions.stream()

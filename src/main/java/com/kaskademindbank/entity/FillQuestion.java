@@ -37,7 +37,7 @@ public class FillQuestion implements Serializable {
     private String voiceFile;
     private String vidFile;
 
-    public Integer getfquestionId() {
+    public Integer getFquestionId() {
         return  fquestionId;
     }
 
