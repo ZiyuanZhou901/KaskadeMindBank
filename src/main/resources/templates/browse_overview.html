@@ -101,9 +101,6 @@
                     <h6 class="font-weight-bolder text-white mb-0">Hi~ <span th:text="${user.userName}"></span>
                     </h6>
                 </nav>
-                <div class="ms-md-auto pe-md-3 d-flex align-items-center">
-
-                </div>
             </div>
         </nav>
         <!-- End Navbar -->
@@ -121,8 +118,13 @@
                                         <input type="text" class="form-control" placeholder="Search..."
                                             id="searchInput">
                                     </div>
+
                                     <thead>
                                         <tr>
+                                            <th
+                                                class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 align-middle">
+                                                <input type="checkbox" id="selectAll" />
+                                            </th>
                                             <th
                                                 class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                                 Type</th>
@@ -141,6 +143,10 @@
                                     <tbody>
                                         <!-- Iterate over your question overviews -->
                                         <tr th:each="questionOverview : ${pageInfo.list}">
+                                            <td>
+                                                <input type="checkbox" class="checkbox"
+                                                    th:value="${questionOverview.id + ',' + questionOverview.type}" />
+                                            </td>
                                             <td>
                                                 <div class="d-flex px-2 py-1">
                                                     <div class="d-flex flex-column justify-content-center">
@@ -180,6 +186,12 @@
                                         </tr>
                                     </tbody>
                                 </table>
+
+                                <div class="modal-footer no-margin-top text-center">
+                                    <ul class="pagination no-margin align-middle">
+                                        <button id="exportButton" class="btn btn-primary">Export</button>
+                                    </ul>
+                                </div>
 
                                 <!-- Pagination -->
                                 <div class="modal-footer no-margin-top text-center">
@@ -368,6 +380,40 @@
                 // 显示匹配的行，隐藏其他行
                 $('#myTable tbody tr').hide();
                 $(filteredRows).show();
+            });
+        });
+    </script>
+    <script>
+        // Select all checkboxes when "selectAll" checkbox is clicked
+        $("#selectAll").click(function () {
+            $(".checkbox").prop('checked', $(this).prop('checked'));
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            $("#exportButton").click(function () {
+                // Collect selected checkboxes
+                var selectedItems = [];
+                $(".checkbox:checked").each(function () {
+                    var values = $(this).val().split(',');
+                    var id = values[0];
+                    var type = values[1];
+                    selectedItems.push({ id: id, type: type });
+                });
+
+                // Send selected items to the backend using AJAX
+                $.ajax({
+                    type: "POST",
+                    url: "/browse/export",
+                    contentType: "application/json",
+                    data: JSON.stringify(selectedItems),
+                    success: function (response) {
+                        console.log(response);
+                    },
+                    error: function (error) {
+                        console.error("Error:", error);
+                    }
+                });
             });
         });
     </script>

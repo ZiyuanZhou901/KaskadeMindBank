@@ -10,14 +10,12 @@ import com.kaskademindbank.mapper.JudgeQuestionMapper;
 import com.kaskademindbank.mapper.SelectQuestionMapper;
 import com.kaskademindbank.mapper.UsersMapper;
 import com.kaskademindbank.vo.QuestionOverview;
+import com.kaskademindbank.vo.SelectedItem;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -37,45 +35,6 @@ public class BrowseController {
     SelectQuestionMapper selectQuestionMapper;
     @Autowired
     UsersMapper usersMapper;
-
-    /*@GetMapping("/browse")
-    public String browseOverview(Model model, HttpSession session, @RequestParam(required = false,defaultValue="1",value="pageNum")Integer pageNum,
-                                 @RequestParam(defaultValue="10",value="pageSize")Integer pageSize) {
-        Users user = (Users) session.getAttribute("user");
-        //Fill为什么没有id？
-        List<FillQuestion> fillQuestions = fillQuestionMapper.findFillQuestionsByUserId(usersMapper.findUserIdByUsername(user.getUserName()));
-        List<JudgeQuestion> judgeQuestions = judgeQuestionMapper.findJudgeQuestionsByUserId(usersMapper.findUserIdByUsername(user.getUserName()));
-        List<SelectQuestion> selectQuestions = selectQuestionMapper.findSelectQuestionsByUserId(usersMapper.findUserIdByUsername(user.getUserName()));
-        List<QuestionOverview> fillQuestionOverviews = fillQuestions.stream()
-                .map(q -> new QuestionOverview("Fill", q.getFquestionId(), q.getSubject(), q.getDescription(), q.getUpTime()))
-                .toList();
-        List<QuestionOverview> allQuestions = new ArrayList<>(fillQuestionOverviews);
-
-        // 判断题
-        List<QuestionOverview> judgeQuestionOverviews = judgeQuestions.stream()
-                .map(q -> new QuestionOverview("Judge", q.getJquestionId(), q.getSubject(), q.getDescription(), q.getUpTime()))
-                .toList();
-        allQuestions.addAll(judgeQuestionOverviews);
-
-        // 选择题
-        List<QuestionOverview> selectQuestionOverviews = selectQuestions.stream()
-                .map(q -> new QuestionOverview("Select", q.getSquestionId(), q.getSubject(), q.getDescription(), q.getUpTime()))
-                .toList();
-        allQuestions.addAll(selectQuestionOverviews);
-
-        // 将结果按照 upTime 排序
-        allQuestions.sort(Comparator.comparing(QuestionOverview::getUpTime).reversed());
-        PageHelper.startPage(pageNum, pageSize,false);
-        try {
-            PageInfo<QuestionOverview> pageInfo = new PageInfo<>(allQuestions);
-            model.addAttribute("pageInfo",pageInfo);
-        }finally {
-            PageHelper.clearPage();
-        }
-
-        model.addAttribute("user", user);
-        return "browse_overview";
-    }*/
     @GetMapping("/browse")
     public String browseOverview(Model model, HttpSession session, @RequestParam(defaultValue = "1") int page) {
         Users user = (Users) session.getAttribute("user");
@@ -151,13 +110,14 @@ public class BrowseController {
     }
 
     @PostMapping("/browse/export")
-    public String doExportQuestions(@RequestParam("exportType") String exportType,
-                                    @RequestParam("filterCriteria") String filterCriteria,
-                                    Model model, HttpSession session) {
+    public String handleExportRequest(@RequestBody List<SelectedItem> selectedItems, Model model, HttpSession session) {
+        model.addAttribute("user", session.getAttribute("user"));
 
-        // 根据用户选择进行题目导出
-        // 可能需要异步处理导出操作，避免长时间的等待
-        return "export_result";
+        //selectedItems是一个SelectedItem的List，其中每个SelectedItem包含了一个题目的type和id
+        //遍历每个selectedItem，根据type和id，从数据库中获取对应的题目
+        //将题目导出到word中
+        //让用户选择存储位置
+        return "redirect:/browse";
     }
 
 }
