@@ -19,6 +19,7 @@
     <link th:href="@{/css/nucleo-svg.css}" rel="stylesheet" />
     <!-- CSS Files -->
     <link id="pagestyle" th:href="@{/css/argon-dashboard.css}" rel="stylesheet" />
+    <script th:src="@{https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.min.js}"></script>
 </head>
 
 <body class="g-sidenav-show   bg-gray-100">
@@ -101,10 +102,7 @@
                     </h6>
                 </nav>
                 <div class="ms-md-auto pe-md-3 d-flex align-items-center">
-                    <div class="input-group">
-                        <span class="input-group-text text-body"><i class="fas fa-search" aria-hidden="true"></i></span>
-                        <input type="text" class="form-control" placeholder="Type here...">
-                    </div>
+
                 </div>
             </div>
         </nav>
@@ -113,13 +111,16 @@
             <div class="row">
                 <div class="col-12">
                     <div class="card mb-4">
-                        <div class="card-header pb-0">
-                            <h6>Questions</h6>
-                        </div>
                         <div class="card-body px-0 pt-0 pb-2">
                             <div class="table-responsive p-0">
 
-                                <table class="table align-items-center mb-0">
+                                <table id="myTable" class="table align-items-center mb-0">
+                                    <div class="input-group">
+                                        <span class="input-group-text text-body"><i class="fas fa-search"
+                                                aria-hidden="true"></i></span>
+                                        <input type="text" class="form-control" placeholder="Search..."
+                                            id="searchInput">
+                                    </div>
                                     <thead>
                                         <tr>
                                             <th
@@ -167,19 +168,22 @@
                                             <!-- <td th:text="${questionOverview.upTime}"></td> -->
 
                                             <td class="align-middle">
-                                                <a th:href="@{/profile}"
+                                                <a th:href="@{/browse/{type}/{id}(type=${#strings.toLowerCase(questionOverview.type)}, id=${questionOverview.id})}"
                                                     class="text-secondary font-weight-bold text-xs nav-link"
                                                     data-toggle="tooltip">
-                                                    Edit
+                                                    <i class="ni ni-bold-right" aria-hidden="true"></i>
                                                 </a>
                                             </td>
+
+
+
                                         </tr>
                                     </tbody>
                                 </table>
 
                                 <!-- Pagination -->
-                                <div class="modal-footer no-margin-top">
-                                    <ul class="pagination pull-right no-margin">
+                                <div class="modal-footer no-margin-top text-center">
+                                    <ul class="pagination pull-right no-margin align-middle">
                                         <li th:each="pageNum, index : ${#numbers.sequence(1, totalPage)}">
                                             <a th:href="'/browse?page='+${pageNum}" th:text="${pageNum}"
                                                 class="badge rounded-pill bg-secondary"></a>
@@ -314,6 +318,60 @@
     <script async defer src="https://buttons.github.io/buttons.js"></script>
     <!-- Control Center for Soft Dashboard: parallax effects, scripts for the example pages etc -->
     <script th:src="@{/js/argon-dashboard.min.js}"></script>
+    <!-- Add these script tags at the end of your HTML body -->
+    <script th:inline="javascript">
+        $(document).ready(function () {
+            // Add click event listener to table headers
+            $('th').click(function () {
+                var table = $(this).closest('table');
+                var index = $(this).index();
+                var rows = table.find('tbody > tr').toArray().sort(comparator(index));
+
+                // Reverse the order if the column is already sorted
+                if ($(this).hasClass('sorted-asc')) {
+                    rows = rows.reverse();
+                    $(this).removeClass('sorted-asc').addClass('sorted-desc');
+                } else {
+                    $(this).removeClass('sorted-desc').addClass('sorted-asc');
+                }
+
+                table.children('tbody').empty().append(rows);
+            });
+
+            // Comparator function for sorting
+            function comparator(index) {
+                return function (a, b) {
+                    var valA = $(a).children('td').eq(index).text();
+                    var valB = $(b).children('td').eq(index).text();
+                    return $.isNumeric(valA) && $.isNumeric(valB) ?
+                        valA - valB :
+                        valA.localeCompare(valB);
+                };
+            }
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            // 将表格的每一行存储到数组中
+            var rows = $('#myTable tbody tr').toArray();
+
+            // 监听搜索框的输入事件
+            $('#searchInput').on('input', function () {
+                var searchTerm = $(this).val().toLowerCase();
+
+                // 过滤表格行
+                var filteredRows = rows.filter(function (row) {
+                    var rowData = $(row).text().toLowerCase();
+                    return rowData.indexOf(searchTerm) > -1;
+                });
+
+                // 显示匹配的行，隐藏其他行
+                $('#myTable tbody tr').hide();
+                $(filteredRows).show();
+            });
+        });
+    </script>
+
 </body>
 
 </html>

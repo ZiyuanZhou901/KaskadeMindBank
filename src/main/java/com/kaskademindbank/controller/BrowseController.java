@@ -118,6 +118,7 @@ public class BrowseController {
         model.addAttribute("questionList",pageInfo.getList());
         model.addAttribute("pageInfo", pageInfo);
         model.addAttribute("user", user);
+        session.setAttribute("user", user);
         System.out.println(totalPage);
         return "browse_overview";
     }
@@ -125,9 +126,22 @@ public class BrowseController {
     public String browseDetail(@PathVariable String questionType,
                                @PathVariable Integer questionId,
                                Model model, HttpSession session) {
-        // 根据题目类型和题目ID获取详细内容
-        // 将详细内容传递给前端
-
+        String tableName = questionType + "Question";
+        Users user = (Users) session.getAttribute("user");
+        model.addAttribute("user", user);
+        if ("fill".equals(questionType)) {
+            FillQuestion fillQuestion = fillQuestionMapper.selectById(questionId);
+            model.addAttribute("type", "fill");
+            model.addAttribute("question", fillQuestion);
+        } else if ("judge".equals(questionType)) {
+            JudgeQuestion judgeQuestion = judgeQuestionMapper.selectById(questionId);
+            model.addAttribute("type", "judge");
+            model.addAttribute("question", judgeQuestion);
+        } else if ("select".equals(questionType)) {
+            SelectQuestion selectQuestion = selectQuestionMapper.selectById(questionId);
+            model.addAttribute("type", "select");
+            model.addAttribute("question", selectQuestion);
+        }
         return "browse_detail";
     }
     @GetMapping("/browse/export")
