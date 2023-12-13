@@ -38,9 +38,9 @@ public class BrowseController {
     @Autowired
     UsersMapper usersMapper;
 
-    @GetMapping("/browse")
+    /*@GetMapping("/browse")
     public String browseOverview(Model model, HttpSession session, @RequestParam(required = false,defaultValue="1",value="pageNum")Integer pageNum,
-                                 @RequestParam(defaultValue="5",value="pageSize")Integer pageSize) {
+                                 @RequestParam(defaultValue="10",value="pageSize")Integer pageSize) {
         Users user = (Users) session.getAttribute("user");
         //Fill为什么没有id？
         List<FillQuestion> fillQuestions = fillQuestionMapper.findFillQuestionsByUserId(usersMapper.findUserIdByUsername(user.getUserName()));
@@ -65,10 +65,9 @@ public class BrowseController {
 
         // 将结果按照 upTime 排序
         allQuestions.sort(Comparator.comparing(QuestionOverview::getUpTime).reversed());
-        PageHelper.startPage(pageNum, pageSize);
+        PageHelper.startPage(pageNum, pageSize,false);
         try {
-            PageInfo<QuestionOverview> pageInfo = new PageInfo<>(allQuestions,pageSize);
-            System.out.println(pageInfo.getPageNum());
+            PageInfo<QuestionOverview> pageInfo = new PageInfo<>(allQuestions);
             model.addAttribute("pageInfo",pageInfo);
         }finally {
             PageHelper.clearPage();
@@ -76,8 +75,52 @@ public class BrowseController {
 
         model.addAttribute("user", user);
         return "browse_overview";
-    }
+    }*/
+    @GetMapping("/browse")
+    public String browseOverview(Model model, HttpSession session, @RequestParam(defaultValue = "1") int page) {
+        Users user = (Users) session.getAttribute("user");
 
+        int pageSize = 10;
+        List<FillQuestion> fillQuestions = fillQuestionMapper.findFillQuestionsByUserId(usersMapper.findUserIdByUsername(user.getUserName()));
+        List<JudgeQuestion> judgeQuestions = judgeQuestionMapper.findJudgeQuestionsByUserId(usersMapper.findUserIdByUsername(user.getUserName()));
+        List<SelectQuestion> selectQuestions = selectQuestionMapper.findSelectQuestionsByUserId(usersMapper.findUserIdByUsername(user.getUserName()));
+
+        List<QuestionOverview> allQuestions = new ArrayList<>();
+        List<QuestionOverview> fillQuestionOverviews = fillQuestions.stream()
+                .map(q -> new QuestionOverview("Fill", q.getFquestionId(), q.getSubject(), q.getDescription(), q.getUpTime()))
+                .toList();
+        allQuestions.addAll(fillQuestionOverviews);
+
+        // 判断题
+        List<QuestionOverview> judgeQuestionOverviews = judgeQuestions.stream()
+                .map(q -> new QuestionOverview("Judge", q.getJquestionId(), q.getSubject(), q.getDescription(), q.getUpTime()))
+                .toList();
+        allQuestions.addAll(judgeQuestionOverviews);
+
+        // 选择题
+        List<QuestionOverview> selectQuestionOverviews = selectQuestions.stream()
+                .map(q -> new QuestionOverview("Select", q.getSquestionId(), q.getSubject(), q.getDescription(), q.getUpTime()))
+                .toList();
+        allQuestions.addAll(selectQuestionOverviews);
+
+        // 将结果按照 upTime 排序
+        allQuestions.sort(Comparator.comparing(QuestionOverview::getUpTime).reversed());
+
+        // 使用 PageHelper 进行分页查询
+        PageHelper.startPage(page, pageSize);
+        List<QuestionOverview> pagedQuestions = allQuestions.subList(Math.min((page - 1) * pageSize, allQuestions.size()),
+                Math.min(page * pageSize, allQuestions.size()));
+
+        PageInfo<QuestionOverview> pageInfo = new PageInfo<>(pagedQuestions);
+        Integer totalPage = (int) Math.ceil((double) allQuestions.size() / pageSize);
+        // 将结果传递给前端
+        model.addAttribute("totalPage", totalPage);
+        model.addAttribute("questionList",pageInfo.getList());
+        model.addAttribute("pageInfo", pageInfo);
+        model.addAttribute("user", user);
+        System.out.println(totalPage);
+        return "browse_overview";
+    }
     @GetMapping("/browse/{questionType}/{questionId}")
     public String browseDetail(@PathVariable String questionType,
                                @PathVariable Integer questionId,
