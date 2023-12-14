@@ -1,6 +1,7 @@
 package com.kaskademindbank.service.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import com.kaskademindbank.entity.FillQuestion;
 import com.kaskademindbank.entity.JudgeQuestion;
 import com.kaskademindbank.entity.Users;
 import com.kaskademindbank.mapper.JudgeQuestionMapper;
@@ -103,5 +104,40 @@ public class JudgeQuestionServiceImpl extends ServiceImpl<JudgeQuestionMapper, J
     @Override
     public List<String> getUploadedSubjectsByUserId(Integer userId) {
         return judgeQuestionMapper.findSubjectsByUserId(userId);
+    }
+
+    @Override
+    public String editJudgeQuestion(JudgeQuestion judgeQuestion, Model model, HttpSession session, MultipartFile imageFile, MultipartFile audioFile, MultipartFile videoFile) {
+        Integer questionId = (Integer) session.getAttribute("questionId");
+        JudgeQuestion existingQuestion = judgeQuestionMapper.selectById(questionId);
+        System.out.println(questionId);
+        existingQuestion.setSubject(judgeQuestion.getSubject());
+        existingQuestion.setDescription(judgeQuestion.getDescription());
+        existingQuestion.setAnswer(judgeQuestion.getAnswer());
+        try {
+            if (!imageFile.isEmpty()) {
+                String imageFileName = "image_" + UUID.randomUUID() + ".jpg";
+                handleFileUpload(imageFile, imageFileName);
+                existingQuestion.setPicFile(imageFileName);
+            }
+            if (!audioFile.isEmpty()) {
+                String audioFileName = "audio_" + UUID.randomUUID() + ".mp3";
+                handleFileUpload(audioFile, audioFileName);
+                existingQuestion.setVoiFile(audioFileName);
+            }
+            if (!videoFile.isEmpty()) {
+                String videoFileName = "video_" + UUID.randomUUID() + ".mp4";
+                handleFileUpload(videoFile, videoFileName);
+                existingQuestion.setVidFile(videoFileName);
+            }
+        } catch (MaxUploadSizeExceededException e) {
+            model.addAttribute("error", "文件大小超过限制");
+            return "redirect:/edit";
+        } catch (IOException e) {
+            model.addAttribute("error", "上传文件时发生错误");
+            return "redirect:/edit";
+        }
+        judgeQuestionMapper.updateById(existingQuestion);
+        return "redirect:/browse/judge/"+questionId;
     }
 }

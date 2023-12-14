@@ -9,6 +9,9 @@ import com.kaskademindbank.mapper.FillQuestionMapper;
 import com.kaskademindbank.mapper.JudgeQuestionMapper;
 import com.kaskademindbank.mapper.SelectQuestionMapper;
 import com.kaskademindbank.mapper.UsersMapper;
+import com.kaskademindbank.service.IFillQuestionService;
+import com.kaskademindbank.service.IJudgeQuestionService;
+import com.kaskademindbank.service.ISelectQuestionService;
 import com.kaskademindbank.vo.QuestionOverview;
 import com.kaskademindbank.vo.SelectedItem;
 import jakarta.servlet.http.HttpSession;
@@ -23,6 +26,7 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
 import java.io.ByteArrayInputStream;
@@ -50,6 +54,12 @@ public class BrowseController {
     SelectQuestionMapper selectQuestionMapper;
     @Autowired
     UsersMapper usersMapper;
+    @Autowired
+    IFillQuestionService fillQuestionService;
+    @Autowired
+    IJudgeQuestionService judgeQuestionService;
+    @Autowired
+    ISelectQuestionService selectQuestionService;
     @GetMapping("/browse")
     public String browseOverview(Model model, HttpSession session, @RequestParam(defaultValue = "1") int page) {
         Users user = (Users) session.getAttribute("user");
@@ -105,20 +115,80 @@ public class BrowseController {
         if ("fill".equals(questionType)) {
             FillQuestion fillQuestion = fillQuestionMapper.selectById(questionId);
             model.addAttribute("type", "fill");
+            session.setAttribute("type", "fill");
             model.addAttribute("question", fillQuestion);
         } else if ("judge".equals(questionType)) {
             JudgeQuestion judgeQuestion = judgeQuestionMapper.selectById(questionId);
             model.addAttribute("type", "judge");
+            session.setAttribute("type", "judge");
             model.addAttribute("question", judgeQuestion);
         } else if ("select".equals(questionType)) {
             SelectQuestion selectQuestion = selectQuestionMapper.selectById(questionId);
             model.addAttribute("type", "select");
+            session.setAttribute("type", "select");
             model.addAttribute("question", selectQuestion);
         }
         System.out.println(model.getAttribute("type"));
+        session.setAttribute("questionId", questionId);
         return "browse_detail";
     }
-    
+    @GetMapping("/edit")
+    public String editQuestion(Model model, HttpSession session) {
+        Users user = (Users) session.getAttribute("user");
+        model.addAttribute("user", user);
+        String type = (String) session.getAttribute("type");
+        Integer questionId = (Integer) session.getAttribute("questionId");
+        session.setAttribute("questionId", questionId);
+        if ("fill".equals(type)) {
+            FillQuestion fillQuestion = fillQuestionMapper.selectById(questionId);
+            model.addAttribute("type", "fillQuestion");
+            model.addAttribute("fillQuestion", new FillQuestion());
+            model.addAttribute("question", fillQuestion);
+        } else if ("judge".equals(type)) {
+            JudgeQuestion judgeQuestion = judgeQuestionMapper.selectById(questionId);
+            model.addAttribute("type", "judgeQuestion");
+            model.addAttribute("judgeQuestion", new JudgeQuestion());
+            model.addAttribute("question", judgeQuestion);
+        } else if ("select".equals(type)) {
+            SelectQuestion selectQuestion = selectQuestionMapper.selectById(questionId);
+            model.addAttribute("type", "selectQuestion");
+            model.addAttribute("selectQuestion", new SelectQuestion());
+            model.addAttribute("question", selectQuestion);
+        }
+        return "edit";
+    }
+    @PostMapping("/edit/fillQuestion")
+    public String editFillQuestion(FillQuestion fillQuestion,
+                                   @RequestParam("imageFile") MultipartFile imageFile,
+                                   @RequestParam("audioFile") MultipartFile audioFile,
+                                   @RequestParam("videoFile") MultipartFile videoFile,
+                                   Model model, HttpSession session) {
+
+        Users user = (Users) session.getAttribute("user");
+        model.addAttribute("user", user);
+        return fillQuestionService.editFillQuestion(fillQuestion, model, session, imageFile, audioFile, videoFile);
+    }
+    @PostMapping("/edit/judgeQuestion")
+    public String editJudgeQuestion(JudgeQuestion judgeQuestion,
+                                    @RequestParam("imageFile") MultipartFile imageFile,
+                                    @RequestParam("audioFile") MultipartFile audioFile,
+                                    @RequestParam("videoFile") MultipartFile videoFile,
+                                    Model model, HttpSession session) {
+        Users user = (Users) session.getAttribute("user");
+        model.addAttribute("user", user);
+        return judgeQuestionService.editJudgeQuestion(judgeQuestion, model, session, imageFile, audioFile, videoFile);
+    }
+    @PostMapping("/edit/selectQuestion")
+    public String editSelectQuestion(SelectQuestion selectQuestion,
+                                     @RequestParam("imageFile") MultipartFile imageFile,
+                                     @RequestParam("audioFile") MultipartFile audioFile,
+                                     @RequestParam("videoFile") MultipartFile videoFile,
+                                     Model model, HttpSession session) {
+        Users user = (Users) session.getAttribute("user");
+        model.addAttribute("user", user);
+        return selectQuestionService.editSelectQuestion(selectQuestion, model, session, imageFile, audioFile, videoFile);
+    }
+
     @GetMapping("/browse/export")
     public String exportQuestions(Model model, HttpSession session) {
         return "redirect:/browse";

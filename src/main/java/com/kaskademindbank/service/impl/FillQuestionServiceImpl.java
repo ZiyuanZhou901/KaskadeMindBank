@@ -105,5 +105,41 @@ public class FillQuestionServiceImpl extends ServiceImpl<FillQuestionMapper, Fil
     public List<String> getUploadedSubjectsByUserId(Integer userId) {
         return fillQuestionMapper.findSubjectsByUserId(userId);
     }
+
+    @Override
+    public String editFillQuestion(FillQuestion fillQuestion, Model model, HttpSession session, MultipartFile imageFile, MultipartFile audioFile, MultipartFile videoFile) {
+        Integer questionId = (Integer) session.getAttribute("questionId");
+        FillQuestion existingQuestion = fillQuestionMapper.selectById(questionId);
+        System.out.println(questionId);
+        existingQuestion.setSubject(fillQuestion.getSubject());
+        existingQuestion.setDescription(fillQuestion.getDescription());
+        existingQuestion.setAnswer(fillQuestion.getAnswer());
+        try {
+            if (!imageFile.isEmpty()) {
+                String imageFileName = "image_" + UUID.randomUUID() + ".jpg";
+                handleFileUpload(imageFile, imageFileName);
+                existingQuestion.setPicFile(imageFileName);
+            }
+            if (!audioFile.isEmpty()) {
+                String audioFileName = "audio_" + UUID.randomUUID() + ".mp3";
+                handleFileUpload(audioFile, audioFileName);
+                existingQuestion.setVoiFile(audioFileName);
+            }
+            if (!videoFile.isEmpty()) {
+                String videoFileName = "video_" + UUID.randomUUID() + ".mp4";
+                handleFileUpload(videoFile, videoFileName);
+                existingQuestion.setVidFile(videoFileName);
+            }
+        } catch (MaxUploadSizeExceededException e) {
+            model.addAttribute("error", "文件大小超过限制");
+            return "redirect:/edit";
+        } catch (IOException e) {
+            model.addAttribute("error", "上传文件时发生错误");
+            return "redirect:/edit";
+        }
+        fillQuestionMapper.updateById(existingQuestion);
+        return "redirect:/browse/fill/"+questionId;
+    }
+
 }
 

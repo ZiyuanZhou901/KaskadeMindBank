@@ -296,7 +296,7 @@
 
             <div class="modal-footer no-margin-top text-center">
                 <ul class="pagination no-margin align-middle">
-                    <button class="btn btn-primary" style="margin-right: 10px;">Edit</button>
+                    <button class="btn btn-primary" style="margin-right: 10px;" onclick="toEdit()">Edit</button>
                     <button class="btn btn-primary" onclick="backbrowse()">Back</button>
                 </ul>
             </div>
@@ -422,6 +422,10 @@
     <script>
         function backbrowse() {
             var targetUrl = "/browse";
+            window.location.href = targetUrl;
+        }
+        function toEdit() {
+            var targetUrl = "/edit"
             window.location.href = targetUrl;
         }
     </script>

@@ -26,4 +26,6 @@ public interface IJudgeQuestionService extends IService<JudgeQuestion> {
                             @RequestParam("videoFile") MultipartFile videoFile);
 
     List<String> getUploadedSubjectsByUserId(Integer userId);
+
+    String editJudgeQuestion(JudgeQuestion judgeQuestion, Model model, HttpSession session, MultipartFile imageFile, MultipartFile audioFile, MultipartFile videoFile);
 }
