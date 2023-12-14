@@ -26,8 +26,10 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.imageio.ImageIO;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -119,7 +121,7 @@ public class BrowseController {
     @GetMapping("/browse/export")
     public String exportQuestions(Model model, HttpSession session) {
         // 提供导出选项，允许用户选择导出方式和筛选条件
-        return "export_questions";
+        return "redirect:/browse";
     }
 
     @PostMapping("/browse/export")
@@ -138,27 +140,25 @@ public class BrowseController {
                 addQuestionToDocument(document, selectedItem.getType(), Integer.valueOf(selectedItem.getId()), index);
             }
 
-            // 保存 Word 文档到指定位置
-            try (FileOutputStream out = new FileOutputStream("/Users/23Fall/JAVA/finalProj/document.docx")) {
-                document.write(out);
-            } catch (Exception e) {
-                e.printStackTrace();
-                // 处理异常，这里可以根据具体情况返回错误信息或者其他响应
-                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-            }
+            // 保存 Word 文档到字节数组
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            document.write(byteArrayOutputStream);
 
             // 构建 ResponseEntity，设置响应头和内容
             HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-            headers.setContentDisposition(ContentDisposition.builder("attachment").filename("exported_document.docx").build());
+            headers.setContentType(new MediaType("application", "vnd.openxmlformats-officedocument.wordprocessingml.document", StandardCharsets.UTF_8));
+            headers.setContentDisposition(ContentDisposition.builder("attachment").filename("exported_document.docx", StandardCharsets.UTF_8).build());
 
-            return new ResponseEntity<>(HttpStatus.OK);
+            // 返回字节数组和响应头
+            return new ResponseEntity<>(byteArrayOutputStream.toByteArray(), headers, HttpStatus.OK);
         } catch (IOException e) {
             e.printStackTrace();
             // 处理异常，这里可以根据具体情况返回错误信息或者其他响应
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+
 
 
 

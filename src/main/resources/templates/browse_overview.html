@@ -407,8 +407,18 @@
                     url: "/browse/export",
                     contentType: "application/json",
                     data: JSON.stringify(selectedItems),
-                    success: function (response) {
-                        console.log(response);
+                    xhrFields: {
+                        responseType: 'blob' // 设置响应类型为 blob
+                    },
+                    success: function (data, textStatus, xhr) {
+
+                        // 创建一个临时链接，设置下载属性，并触发点击
+                        var link = document.createElement('a');
+                        link.href = window.URL.createObjectURL(data);
+                        link.download = 'exported_document.docx';
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
                     },
                     error: function (error) {
                         console.error("Error:", error);
@@ -416,7 +426,10 @@
                 });
             });
         });
+
     </script>
+
+
 
 </body>
 
