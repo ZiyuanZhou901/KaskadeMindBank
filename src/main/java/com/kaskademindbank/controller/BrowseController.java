@@ -12,11 +12,24 @@ import com.kaskademindbank.mapper.UsersMapper;
 import com.kaskademindbank.vo.QuestionOverview;
 import com.kaskademindbank.vo.SelectedItem;
 import jakarta.servlet.http.HttpSession;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.util.Units;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.usermodel.XWPFParagraph;
+import org.apache.poi.xwpf.usermodel.XWPFRun;
+import org.apache.tika.Tika;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import javax.imageio.ImageIO;
+import java.io.ByteArrayInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -110,14 +123,140 @@ public class BrowseController {
     }
 
     @PostMapping("/browse/export")
-    public String handleExportRequest(@RequestBody List<SelectedItem> selectedItems, Model model, HttpSession session) {
-        model.addAttribute("user", session.getAttribute("user"));
+    public ResponseEntity<byte[]> handleExportRequest(@RequestBody List<SelectedItem> selectedItems, Model model, HttpSession session) {
+        // 获取用户信息
+        Users user = (Users) session.getAttribute("user");
+        model.addAttribute("user", user);
 
-        //selectedItems是一个SelectedItem的List，其中每个SelectedItem包含了一个题目的type和id
-        //遍历每个selectedItem，根据type和id，从数据库中获取对应的题目
-        //将题目导出到word中
-        //让用户选择存储位置
-        return "redirect:/browse";
+        // 创建一个新的 Word 文档
+        try (XWPFDocument document = new XWPFDocument()) {
+            Integer index = 0;
+            // 遍历每个选中的题目
+            for (SelectedItem selectedItem : selectedItems) {
+                index++;
+                // 根据 type 和 id 从数据库中获取对应的题目信息
+                addQuestionToDocument(document, selectedItem.getType(), Integer.valueOf(selectedItem.getId()), index);
+            }
+
+            // 保存 Word 文档到指定位置
+            try (FileOutputStream out = new FileOutputStream("/Users/23Fall/JAVA/finalProj/document.docx")) {
+                document.write(out);
+            } catch (Exception e) {
+                e.printStackTrace();
+                // 处理异常，这里可以根据具体情况返回错误信息或者其他响应
+                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+
+            // 构建 ResponseEntity，设置响应头和内容
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+            headers.setContentDisposition(ContentDisposition.builder("attachment").filename("exported_document.docx").build());
+
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (IOException e) {
+            e.printStackTrace();
+            // 处理异常，这里可以根据具体情况返回错误信息或者其他响应
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+
+    // 添加题目信息到 Word 文档的辅助方法
+    private void addQuestionToDocument(XWPFDocument document, String type, Integer id, Integer index) {
+        // 根据 type 和 id 从数据库中获取对应的题目信息
+        if ("Fill".equals(type)) {
+            FillQuestion question = fillQuestionMapper.selectById(id);
+            XWPFParagraph paragraph = document.createParagraph();
+            XWPFRun run = paragraph.createRun();
+            run.setText("第" + index + "题");
+            run.addCarriageReturn();
+            run.setText("主题: " + question.getSubject());
+            run.addCarriageReturn();
+            run.setText("题目: " + question.getDescription());
+            run.addCarriageReturn();
+            run.setText("答案: " + question.getAnswer());
+            if(question.getPicFile()!=null){
+                String picPath = question.getPicFile();
+                insertImage(document, picPath);
+            }
+            run.addCarriageReturn();
+        } else if ("Judge".equals(type)) {
+            JudgeQuestion question = judgeQuestionMapper.selectById(id);
+            XWPFParagraph paragraph = document.createParagraph();
+            XWPFRun run = paragraph.createRun();
+            run.setText("第" + index + "题");
+            run.addCarriageReturn();
+            run.setText("主题: " + question.getSubject());
+            run.addCarriageReturn();
+            run.setText("题目: " + question.getDescription());
+            run.addCarriageReturn();
+            run.setText("答案: " + question.getAnswer());
+            if(question.getPicFile()!=null){
+                String picPath = question.getPicFile();
+                insertImage(document, picPath);
+            }
+            run.addCarriageReturn();
+        } else if ("Select".equals(type)) {
+            SelectQuestion question = selectQuestionMapper.selectById(id);
+            XWPFParagraph paragraph = document.createParagraph();
+            XWPFRun run = paragraph.createRun();
+            run.setText("第" + index + "题");
+            run.addCarriageReturn();
+            run.setText("主题: " + question.getSubject());
+            run.addCarriageReturn();
+            run.setText("题目: " + question.getDescription());
+            run.addCarriageReturn();
+            run.setText("选项A: " + question.getAnswerA());
+            run.addCarriageReturn();
+            run.setText("选项B: " + question.getAnswerB());
+            run.addCarriageReturn();
+            run.setText("选项C: " + question.getAnswerC());
+            run.addCarriageReturn();
+            run.setText("选项D: " + question.getAnswerD());
+            run.addCarriageReturn();
+            run.setText("答案: " + question.getAnswer());
+            if(question.getPicFile()!=null){
+                String picPath = question.getPicFile();
+                insertImage(document, picPath);
+            }
+            run.addCarriageReturn();
+        }
+
+    }
+    // 插入图片到文档中
+    private void insertImage(XWPFDocument document, String picPath) {
+        try {
+            // 图片存储在项目根目录下的一级目录upload
+            byte[] bytes = Files.readAllBytes(Paths.get("upload/" + picPath));
+
+            // 使用 Apache Tika 获取文件的真实类型
+            Tika tika = new Tika();
+            String mimeType = tika.detect(bytes);
+
+            // 根据文件类型设置格式
+            int format;
+            if (mimeType.startsWith("image/jpeg")) {
+                format = XWPFDocument.PICTURE_TYPE_JPEG;
+            } else if (mimeType.startsWith("image/png")) {
+                format = XWPFDocument.PICTURE_TYPE_PNG;
+            } else {
+                format = XWPFDocument.PICTURE_TYPE_JPEG;
+            }
+
+            int originalWidth = ImageIO.read(new ByteArrayInputStream(bytes)).getWidth();
+            int originalHeight = ImageIO.read(new ByteArrayInputStream(bytes)).getHeight();
+            double scale = 300.0 / originalWidth;
+            int scaledWidth = 300;
+            int scaledHeight = (int) (originalHeight * scale);
+            document.createParagraph().createRun().addPicture(new ByteArrayInputStream(bytes), format, "image", Units.toEMU(scaledWidth), Units.toEMU(scaledHeight));
+            // 添加换行
+            document.createParagraph().createRun().addBreak();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InvalidFormatException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }
