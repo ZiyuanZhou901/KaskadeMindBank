@@ -105,26 +105,200 @@
         </nav>
         <!-- End Navbar -->
         <div class="container-fluid py-4">
-            <div>
-                <h2 th:text="${type}"></h2>
-                <div th:switch="${type}">
-                    <div th:case="'fill'">
-                        <!-- 根据填空题的信息展示内容 -->
-                        <p th:text="${question.description}"></p>
-                        <!-- 添加其他填空题的详细信息 -->
+            <div class="row mt-4 mb-3">
+                <div class="col-lg-6 mb-lg-0 mb-4">
+
+                    <div class="card z-index-2 h-100">
+                        <div class="card-header pb-0 pt-3 bg-transparent">
+                            <h6 class="text-capitalize">Question Overview</h6>
+                            <p class="text-sm mb-0">
+                                <span class="badge bg-gradient-info" th:text="${type}"></span>
+                            </p>
+                        </div>
+                        <div class="card-body p-3">
+                            <p class="badge bg-gradient-primary">Subject:</p>
+                            <span class="font-weight-bold" th:text="${question.subject}"></span>
+                            <br>
+
+                            <p class="badge bg-gradient-primary">Description:</p>
+                            <span class="font-weight-bold" th:text="${question.description}"></span>
+                            <br>
+
+                            <th:block th:if="${type eq 'select'}">
+                                <!-- 显示四个选项的内容 -->
+                                <p class="badge bg-gradient-secondary">Option A:</p>
+                                <span class="font-weight-bold" th:text="${question.answerA}"></span>
+                                <br>
+
+                                <p class="badge bg-gradient-secondary">Option B:</p>
+                                <span class="font-weight-bold" th:text="${question.answerB}"></span>
+                                <br>
+
+                                <p class="badge bg-gradient-secondary">Option C:</p>
+                                <span class="font-weight-bold" th:text="${question.answerC}"></span>
+                                <br>
+
+                                <p class="badge bg-gradient-secondary">Option D:</p>
+                                <span class="font-weight-bold" th:text="${question.answerD}"></span>
+                                <br>
+                            </th:block>
+
+                            <p class="badge bg-gradient-primary">Answer:</p>
+                            <span class="font-weight-bold" th:text="${question.answer}"></span>
+                            <br>
+                        </div>
+
+
                     </div>
-                    <div th:case="'judge'">
-                        <!-- 根据判断题的信息展示内容 -->
-                        <p th:text="${question.description}"></p>
-                        <!-- 添加其他判断题的详细信息 -->
-                    </div>
-                    <div th:case="'select'">
-                        <!-- 根据选择题的信息展示内容 -->
-                        <p th:text="${question.description}"></p>
-                        <!-- 添加其他选择题的详细信息 -->
-                    </div>
-                    <!-- 可以根据需要添加其他题型的展示内容 -->
                 </div>
+                <!-- 视频 card -->
+                <div class="col-lg-6 mb-lg-0 mb-4">
+                    <!-- 使用 Thymeleaf 条件语句检查 vidFile 字段是否不为空 -->
+                    <th:block th:if="${question.vidFile != null}">
+                        <!-- vidFile 不为空时显示视频 card -->
+                        <div class="card">
+                            <!-- 视频 card 头部 -->
+                            <div class="card-header pb-0 pt-3 bg-transparent">
+                                <h6 class="text-capitalize">Video Overview</h6>
+                                <!-- 这里可以添加概览信息，比如视频时长等 -->
+                            </div>
+                            <!-- 视频 card 主体 -->
+                            <div class="card-body">
+                                <style>
+                                    /* 设置视频播放器的最大宽度为100% */
+                                    video {
+                                        max-width: 100%;
+                                        height: auto;
+                                    }
+                                </style>
+
+                                <video controls th:if="${question.vidFile != null}">
+                                    <!-- 使用 Thymeleaf 设置视频文件的URL -->
+                                    <source th:src="@{/upload/{filename}(filename=${question.vidFile})}"
+                                        type="video/mp4">
+                                    Your browser does not support the video element.
+                                </video>
+                            </div>
+
+
+                        </div>
+                    </th:block>
+                    <!-- 使用 Thymeleaf 条件语句检查 vidFile 字段是否为空 -->
+                    <th:block th:unless="${question.vidFile != null}">
+                        <!-- vidFile 为空时显示 "No video for this question." -->
+                        <div class="card">
+                            <!-- 视频 card 头部 -->
+                            <div class="card-header pb-0 pt-3 bg-transparent">
+                                <h6 class="text-capitalize">Video Overview</h6>
+                                <!-- 这里可以添加概览信息，比如提示用户没有视频信息等 -->
+                            </div>
+                            <!-- 视频 card 主体 -->
+                            <div class="card-body">
+                                <p class="text-sm mb-0">
+                                    <i class="fa fa-info-circle"></i>
+                                    <span class="font-weight-bold">No video available for this question.</span>
+                                </p>
+                            </div>
+                        </div>
+                    </th:block>
+                </div>
+            </div>
+            <div class="row mt-4 mb-3">
+
+
+
+                <div class="col-lg-6">
+                    <div class="card card-blog card-plain">
+                        <div class="position-relative">
+                            <!-- 使用 Thymeleaf 条件语句检查 picFile 字段是否为空 -->
+                            <th:block th:unless="${question.picFile == null}">
+                                <!-- 图片不为空时显示图片 -->
+                                <div class="d-block blur-shadow-image align-middle"
+                                    style="width: 550px; height: 250px; overflow: hidden; background-color: white;">
+                                    <!-- 拼接图片路径，假设存储在根目录下的 /upload 目录中 -->
+                                    <img th:src="@{/upload/{filename}(filename=${question.picFile})}"
+                                        alt="img-blur-shadow" class="img-fluid shadow border-radius-lg"
+                                        style="width: 100%; height: 100%; object-fit: contain;">
+                                </div>
+                            </th:block>
+                            <!-- 如果 picFile 为空，显示默认图片 -->
+                            <th:block th:if="${question.picFile == null}">
+                                <div class="d-block blur-shadow-image align-middle"
+                                    style="width: 550px; height: 250px; overflow: hidden; background-color: white;">
+                                    <!-- 默认图片路径，替换为您的默认图片路径 -->
+                                    <img th:src="@{/img/winter.jpg}" alt="img-blur-shadow"
+                                        class="img-fluid shadow border-radius-lg"
+                                        style="width: 100%; height: 100%; object-fit: contain;">
+                                </div>
+                            </th:block>
+                        </div>
+                        <div class="card-body px-0 pt-4">
+                            <p class="text-gradient text-primary text-gradient font-weight-bold text-sm text-uppercase">
+                                Pic
+                            </p>
+                            <th:block th:if="${question.picFile == null}">
+                                <a href="javascript:;">
+                                    <h6>
+                                        No pic for this question.
+                                    </h6>
+                                </a>
+                            </th:block>
+                        </div>
+                    </div>
+
+
+
+                </div>
+                <!-- 音频 card -->
+                <div class="col-lg-6 mb-lg-0 mb-4">
+                    <!-- 使用 Thymeleaf 条件语句检查 voiFile 字段是否不为空 -->
+                    <th:block th:if="${question.voiFile != null}">
+                        <!-- voiFile 不为空时显示音频 card -->
+                        <div class="card">
+                            <!-- 音频 card 头部 -->
+                            <div class="card-header pb-0 pt-3 bg-transparent">
+                                <h6 class="text-capitalize">Audio Overview</h6>
+                                <!-- 这里可以添加概览信息，比如播放时长等 -->
+                            </div>
+                            <!-- 音频 card 主体 -->
+                            <div class="card-body">
+                                <audio controls th:if="${question.voiFile != null}">
+                                    <!-- 使用 Thymeleaf 设置音频文件的URL -->
+                                    <source th:src="@{/upload/{filename}(filename=${question.voiFile})}"
+                                        type="audio/mpeg">
+                                    Your browser does not support the audio element.
+                                </audio>
+                            </div>
+
+                        </div>
+                    </th:block>
+                    <!-- 使用 Thymeleaf 条件语句检查 voiFile 字段是否为空 -->
+                    <th:block th:unless="${question.voiFile != null}">
+                        <!-- voiFile 为空时显示 "No audio for this question." -->
+                        <div class="card">
+                            <!-- 音频 card 头部 -->
+                            <div class="card-header pb-0 pt-3 bg-transparent">
+                                <h6 class="text-capitalize">Audio Overview</h6>
+                                <!-- 这里可以添加概览信息，比如提示用户没有音频信息等 -->
+                            </div>
+                            <!-- 音频 card 主体 -->
+                            <div class="card-body">
+                                <p class="text-sm mb-0">
+                                    <i class="fa fa-info-circle"></i>
+                                    <span class="font-weight-bold">No audio available for this question.</span>
+                                </p>
+                            </div>
+                        </div>
+                    </th:block>
+                </div>
+            </div>
+
+
+            <div class="modal-footer no-margin-top text-center">
+                <ul class="pagination no-margin align-middle">
+                    <button class="btn btn-primary" style="margin-right: 10px;">Edit</button>
+                    <button class="btn btn-primary" onclick="backbrowse()">Back</button>
+                </ul>
             </div>
 
             <footer class="footer py-5">
@@ -245,6 +419,12 @@
     <script async defer src="https://buttons.github.io/buttons.js"></script>
     <!-- Control Center for Soft Dashboard: parallax effects, scripts for the example pages etc -->
     <script th:src="@{/js/argon-dashboard.min.js}"></script>
+    <script>
+        function backbrowse() {
+            var targetUrl = "/browse";
+            window.location.href = targetUrl;
+        }
+    </script>
 </body>
 
 </html>

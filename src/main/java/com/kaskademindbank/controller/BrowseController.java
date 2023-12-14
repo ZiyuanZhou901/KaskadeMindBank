@@ -80,7 +80,6 @@ public class BrowseController {
         // 将结果按照 upTime 排序
         allQuestions.sort(Comparator.comparing(QuestionOverview::getUpTime).reversed());
 
-        // 使用 PageHelper 进行分页查询
         PageHelper.startPage(page, pageSize);
         List<QuestionOverview> pagedQuestions = allQuestions.subList(Math.min((page - 1) * pageSize, allQuestions.size()),
                 Math.min(page * pageSize, allQuestions.size()));
@@ -96,11 +95,11 @@ public class BrowseController {
         System.out.println(totalPage);
         return "browse_overview";
     }
+
     @GetMapping("/browse/{questionType}/{questionId}")
     public String browseDetail(@PathVariable String questionType,
                                @PathVariable Integer questionId,
                                Model model, HttpSession session) {
-        String tableName = questionType + "Question";
         Users user = (Users) session.getAttribute("user");
         model.addAttribute("user", user);
         if ("fill".equals(questionType)) {
@@ -116,11 +115,12 @@ public class BrowseController {
             model.addAttribute("type", "select");
             model.addAttribute("question", selectQuestion);
         }
+        System.out.println(model.getAttribute("type"));
         return "browse_detail";
     }
+    
     @GetMapping("/browse/export")
     public String exportQuestions(Model model, HttpSession session) {
-        // 提供导出选项，允许用户选择导出方式和筛选条件
         return "redirect:/browse";
     }
 
@@ -157,10 +157,6 @@ public class BrowseController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
-
-
-
 
     // 添加题目信息到 Word 文档的辅助方法
     private void addQuestionToDocument(XWPFDocument document, String type, Integer id, Integer index) {

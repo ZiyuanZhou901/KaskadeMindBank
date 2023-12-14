@@ -77,7 +77,7 @@ public class FillQuestionServiceImpl extends ServiceImpl<FillQuestionMapper, Fil
             if (!audioFile.isEmpty()) {
                 String audioFileName = "audio_" + UUID.randomUUID() + ".mp3";
                 handleFileUpload(audioFile, audioFileName);
-                fillQuestion.setVoiceFile(audioFileName);
+                fillQuestion.setVoiFile(audioFileName);
             }
             if (!videoFile.isEmpty()) {
                 String videoFileName = "video_" + UUID.randomUUID() + ".mp4";

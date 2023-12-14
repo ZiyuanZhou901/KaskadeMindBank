@@ -34,7 +34,7 @@ public class FillQuestion implements Serializable {
 
     private String picFile;
 
-    private String voiceFile;
+    private String voiFile;
     private String vidFile;
 
     public Integer getFquestionId() {
@@ -101,12 +101,12 @@ public class FillQuestion implements Serializable {
         this.picFile = picFile;
     }
 
-    public String getVoiceFile() {
-        return voiceFile;
+    public String getVoiFile() {
+        return voiFile;
     }
 
-    public void setVoiceFile(String voiceFile) {
-        this.voiceFile = voiceFile;
+    public void setVoiFile(String voiFile) {
+        this.voiFile = voiFile;
     }
 
     public String getVidFile() {
@@ -128,7 +128,7 @@ public class FillQuestion implements Serializable {
         ", wCollect = " + wCollect +
         ", upTime = " + upTime +
         ", picFile = " + picFile +
-        ", voiceFile = " + voiceFile +
+        ", voiceFile = " + voiFile +
         "}";
     }
 }

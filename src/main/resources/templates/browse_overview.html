@@ -14,6 +14,7 @@
     <!-- Nucleo Icons -->
     <link th:href="@{/css/nucleo-icons.css}" rel="stylesheet" />
     <link th:href="@{/css/nucleo-svg.css}" rel="stylesheet" />
+
     <!-- Font Awesome Icons -->
     <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
     <link th:href="@{/css/nucleo-svg.css}" rel="stylesheet" />
@@ -186,10 +187,11 @@
                                         </tr>
                                     </tbody>
                                 </table>
-
                                 <div class="modal-footer no-margin-top text-center">
                                     <ul class="pagination no-margin align-middle">
-                                        <button id="exportButton" class="btn btn-primary">Export</button>
+                                        <button id="exportButton" class="btn btn-primary"
+                                            style="margin-right: 10px;">Export</button>
+                                        <button class="btn btn-primary">Show All</button>
                                     </ul>
                                 </div>
 
@@ -401,6 +403,12 @@
                     selectedItems.push({ id: id, type: type });
                 });
 
+                // Check if any checkbox is selected
+                if (selectedItems.length === 0) {
+                    alert("Please select at least one item.");
+                    return;
+                }
+
                 // Send selected items to the backend using AJAX
                 $.ajax({
                     type: "POST",
@@ -411,7 +419,6 @@
                         responseType: 'blob' // 设置响应类型为 blob
                     },
                     success: function (data, textStatus, xhr) {
-
                         // 创建一个临时链接，设置下载属性，并触发点击
                         var link = document.createElement('a');
                         link.href = window.URL.createObjectURL(data);
@@ -426,6 +433,7 @@
                 });
             });
         });
+
 
     </script>
 

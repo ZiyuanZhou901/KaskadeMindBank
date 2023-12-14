@@ -24,7 +24,7 @@ mybatis-plus:
 
 
 file:
-  path: /Users/23Fall/JAVA/finalProj/KaskadeMindBank/upload/
+  path: /Users/23Fall/JAVA/finalProj/KaskadeMindBank/src/main/resources/static/upload/
 
 pagehelper:
   helper-dialect: mysql
