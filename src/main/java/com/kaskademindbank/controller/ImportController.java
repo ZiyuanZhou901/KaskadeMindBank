@@ -1,15 +1,23 @@
 package com.kaskademindbank.controller;
 
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.kaskademindbank.entity.FillQuestion;
 import com.kaskademindbank.entity.JudgeQuestion;
 import com.kaskademindbank.entity.SelectQuestion;
 import com.kaskademindbank.entity.Users;
+import com.kaskademindbank.mapper.FillQuestionMapper;
+import com.kaskademindbank.mapper.JudgeQuestionMapper;
+import com.kaskademindbank.mapper.SelectQuestionMapper;
 import com.kaskademindbank.mapper.UsersMapper;
 import com.kaskademindbank.service.IFillQuestionService;
 import com.kaskademindbank.service.IJudgeQuestionService;
 import com.kaskademindbank.service.ISelectQuestionService;
 import com.kaskademindbank.service.IUsersService;
 import jakarta.servlet.http.HttpSession;
+import org.apache.poi.EncryptedDocumentException;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,8 +27,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.awt.desktop.SystemEventListener;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.invoke.SwitchPoint;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Controller
 public class ImportController {
@@ -32,11 +47,18 @@ public class ImportController {
     ISelectQuestionService selectQuestionService;
     @Autowired
     UsersMapper usersMapper;
+    @Autowired
+    FillQuestionMapper fillQuestionMapper;
+    @Autowired
+    JudgeQuestionMapper judgeQuestionMapper;
+    @Autowired
+    SelectQuestionMapper selectQuestionMapper;
 
     @GetMapping("/import")
     public String showImportPage(Model model, HttpSession session) {
         model.addAttribute("successMessage", session.getAttribute("successMessage"));
         model.addAttribute("user", session.getAttribute("user"));
+        model.addAttribute("success", session.getAttribute("success"));
         return "import";
     }
 
@@ -110,21 +132,272 @@ public class ImportController {
         model.addAttribute("user", session.getAttribute("user"));
         return selectQuestionService.importByTemplate(selectQuestion, model, session, imageFile, audioFile, videoFile);
     }
+    @PostMapping("/import/fromExcel")
+    public String importByExcel(@RequestParam("excelFile") MultipartFile excelFile, Model model, HttpSession session) {
+        Integer userId;
+        Users user = (Users) session.getAttribute("user");
+        userId = usersMapper.findUserIdByUsername(user.getUserName());
 
-    @GetMapping("/import/directinput")
-    public String showDirectInputImportPage() {
-        return "direct_input_import";
+        // 检查上传的文件是否为空
+        if (!excelFile.isEmpty()) {
+            try (InputStream inputStream = excelFile.getInputStream()) {
+                Workbook workbook = WorkbookFactory.create(inputStream);
+
+                // 遍历每个表单
+                for (int sheetIndex = 0; sheetIndex < workbook.getNumberOfSheets(); sheetIndex++) {
+                    Sheet sheet = workbook.getSheetAt(sheetIndex);
+                    // 根据表单名称处理每个表单
+                    switch (sheet.getSheetName()) {
+                        case "Fill":
+                            processFillSheet(sheet, userId);
+                            break;
+                        case "Judge":
+                            processJudgeSheet(sheet, userId);
+                            break;
+                        case "Select":
+                            processSelectSheet(sheet, userId);
+                            break;
+                    }
+                }
+
+                session.setAttribute("success", "Excel File imported successfully!");
+            } catch (IOException | EncryptedDocumentException e) {
+                e.printStackTrace();
+                model.addAttribute("errorMessage", "File is empty!");
+            }
+        } else {
+            // 如果文件为空，向模型添加错误消息
+            model.addAttribute("errorMessage", "Error processing the file!");
+        }
+
+        // 将用户属性添加到模型
+        model.addAttribute("user", session.getAttribute("user"));
+
+        // 重定向到导入页面
+        return "redirect:/import";
     }
 
-    @PostMapping("/import/directinput")
-    public String importByDirectInput(String questionText, Model model) {
+    private void processFillSheet(Sheet sheet, Integer userId) {
+        // 假设第一行包含列标题
+        Iterator<Row> rowIterator = sheet.iterator();
+        if (rowIterator.hasNext()) {
+            // 跳过标题行
+            rowIterator.next();
+        }
 
-        //importService.importByDirectInput(questionText);
+        while (rowIterator.hasNext()) {
+            Row row = rowIterator.next();
 
-        // 添加成功信息到 model，用于在前端显示
-        model.addAttribute("successMessage", "Direct input import successful");
+            // 假设列按顺序为：主题、描述、答案
+            String subject = getCellValueAsString(row.getCell(0));
+            String description = getCellValueAsString(row.getCell(1));
+            String answer = getCellValueAsString(row.getCell(2));
 
-        return "direct_input_import";
+            // 创建FillQuestion对象并保存到数据库
+            FillQuestion fillQuestion = new FillQuestion();
+            fillQuestion.setSubject(subject);
+            fillQuestion.setDescription(description);
+            fillQuestion.setAnswer(answer);
+            fillQuestion.setUserId(userId);
+            fillQuestion.setUpTime(LocalDateTime.now());
+            fillQuestionMapper.insert(fillQuestion);
+        }
     }
+
+    private void processJudgeSheet(Sheet sheet, Integer userId) {
+        // 假设第一行包含列标题
+        Iterator<Row> rowIterator = sheet.iterator();
+        if (rowIterator.hasNext()) {
+            // 跳过标题行
+            rowIterator.next();
+        }
+
+        while (rowIterator.hasNext()) {
+            Row row = rowIterator.next();
+
+            // 假设列按顺序为：主题、描述、答案
+            String subject = getCellValueAsString(row.getCell(0));
+            String description = getCellValueAsString(row.getCell(1));
+            String answerValue = getCellValueAsString(row.getCell(2));
+
+            // 将"正确"和"错误"映射为相应的值
+            String answer = "正确".equals(answerValue) ? "correct" : "错误".equals(answerValue) ? "incorrect" : null;
+
+            // 创建JudgeQuestion对象并保存到数据库
+            if (answer != null) {
+                JudgeQuestion judgeQuestion = new JudgeQuestion();
+                judgeQuestion.setSubject(subject);
+                judgeQuestion.setDescription(description);
+                judgeQuestion.setAnswer(answer);
+                judgeQuestion.setUserId(userId);
+                judgeQuestion.setUpTime(LocalDateTime.now());
+                judgeQuestionMapper.insert(judgeQuestion);
+            }
+        }
+    }
+
+    private void processSelectSheet(Sheet sheet, Integer userId) {
+        // 假设第一行包含列标题
+        Iterator<Row> rowIterator = sheet.iterator();
+        if (rowIterator.hasNext()) {
+            // 跳过标题行
+            rowIterator.next();
+        }
+
+        while (rowIterator.hasNext()) {
+            Row row = rowIterator.next();
+
+            // 假设列按顺序为：主题、描述、选项A、选项B、选项C、选项D、答案
+            String subject = getCellValueAsString(row.getCell(0));
+            String description = getCellValueAsString(row.getCell(1));
+            String optionA = getCellValueAsString(row.getCell(2));
+            String optionB = getCellValueAsString(row.getCell(3));
+            String optionC = getCellValueAsString(row.getCell(4));
+            String optionD = getCellValueAsString(row.getCell(5));
+            String answer = getCellValueAsString(row.getCell(6));
+
+            // 创建SelectQuestion对象并保存到数据库
+            SelectQuestion selectQuestion = new SelectQuestion();
+            selectQuestion.setSubject(subject);
+            selectQuestion.setDescription(description);
+            selectQuestion.setAnswerA(optionA);
+            selectQuestion.setAnswerB(optionB);
+            selectQuestion.setAnswerC(optionC);
+            selectQuestion.setAnswerD(optionD);
+            selectQuestion.setAnswer(answer);
+            selectQuestion.setUserId(userId);
+            selectQuestion.setUpTime(LocalDateTime.now());
+            selectQuestionMapper.insert(selectQuestion);
+        }
+    }
+
+
+    // 获取单元格值为字符串的辅助方法
+    private String getCellValueAsString(Cell cell) {
+        if (cell == null) {
+            return null;
+        }
+        switch (cell.getCellType()) {
+            case STRING:
+                return cell.getStringCellValue().trim();
+            case NUMERIC:
+                return String.valueOf(cell.getNumericCellValue());
+            case BOOLEAN:
+                return String.valueOf(cell.getBooleanCellValue());
+            default:
+                return null;
+        }
+    }
+    @PostMapping("/import/fromWord")
+    public String importByWord(@RequestParam("wordFile") MultipartFile wordFile, Model model, HttpSession session) {
+        Integer userId;
+        Users user = (Users) session.getAttribute("user");
+        userId=usersMapper.findUserIdByUsername(user.getUserName());
+        try {
+            // Check if the uploaded file is not empty
+            if (!wordFile.isEmpty()) { 
+                // Read the content of the Word file
+                InputStream inputStream = wordFile.getInputStream();
+                XWPFDocument document = new XWPFDocument(inputStream);
+                XWPFWordExtractor extractor = new XWPFWordExtractor(document);
+
+                String textContent = extractor.getText();
+
+                processWordContent(textContent,userId);
+
+                extractor.close();
+                inputStream.close();
+
+                // Add a success message to the model
+                session.setAttribute("success", "Word File imported successfully!");
+            } else {
+                // Add an error message to the model if the file is empty
+                model.addAttribute("errorMessage", "File is empty!");
+            }
+        } catch (IOException e) {
+
+            e.printStackTrace();
+            model.addAttribute("errorMessage", "Error processing the file!");
+        }
+        // Add user attribute to the model
+        model.addAttribute("user", session.getAttribute("user"));
+        // Redirect to the import page
+        return "redirect:/import";
+    }
+    private void processWordContent(String textContent, Integer userId) {
+        String[] lines = textContent.split("\\r?\\n");
+
+        for (int i = 0; i < lines.length; i++) {
+            String line = lines[i];
+
+            if (line.startsWith("题型：填空")) {
+                FillQuestion currentFillQuestion = new FillQuestion();
+                i++;
+                currentFillQuestion.setSubject(lines[i].split("：")[1]);
+
+                i++;
+                currentFillQuestion.setDescription(lines[i].split("：")[1]);
+
+                i++;
+                currentFillQuestion.setAnswer(lines[i].split("：")[1]);
+                currentFillQuestion.setUserId(userId);
+                currentFillQuestion.setUpTime(LocalDateTime.now());
+                fillQuestionMapper.insert(currentFillQuestion);
+            }else if (line.startsWith("题型：判断")) {
+                JudgeQuestion currentJudgeQuestion = new JudgeQuestion();
+                i++;
+                currentJudgeQuestion.setSubject(lines[i].split("：")[1]);
+
+                i++;
+                currentJudgeQuestion.setDescription(lines[i].split("：")[1]);
+
+                i++;
+                // Check if the answer is "正确" or "错误" and set accordingly
+                String answer = lines[i].split("：")[1];
+                if ("正确".equals(answer)) {
+                    currentJudgeQuestion.setAnswer("correct");
+                } else if ("错误".equals(answer)) {
+                    currentJudgeQuestion.setAnswer("incorrect");
+                }
+
+                currentJudgeQuestion.setUserId(userId);
+                currentJudgeQuestion.setUpTime(LocalDateTime.now());
+                judgeQuestionMapper.insert(currentJudgeQuestion);
+            } else if (line.startsWith("题型：选择")) {
+                SelectQuestion currentSelectQuestion = new SelectQuestion();
+                i++;
+                currentSelectQuestion.setSubject(lines[i].split("：")[1]);
+
+                i++;
+                currentSelectQuestion.setDescription(lines[i].split("：")[1]);
+
+                i++;
+                currentSelectQuestion.setAnswerA(lines[i].split("：")[1]);
+
+                i++;
+                currentSelectQuestion.setAnswerB(lines[i].split("：")[1]);
+
+                i++;
+                currentSelectQuestion.setAnswerC(lines[i].split("：")[1]);
+
+                i++;
+                currentSelectQuestion.setAnswerD(lines[i].split("：")[1]);
+
+                i++;
+                currentSelectQuestion.setAnswer(lines[i].split("：")[1]);
+
+                currentSelectQuestion.setUserId(userId);
+                currentSelectQuestion.setUpTime(LocalDateTime.now());
+                selectQuestionMapper.insert(currentSelectQuestion);
+            }
+
+        }
+    }
+
+
+
+
+
 }
+
 
