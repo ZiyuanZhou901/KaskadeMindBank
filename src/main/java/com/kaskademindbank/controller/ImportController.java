@@ -18,10 +18,12 @@ import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,11 +33,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.invoke.SwitchPoint;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static java.util.Objects.isNull;
 
 @Controller
 public class ImportController {
@@ -131,7 +136,75 @@ public class ImportController {
                                          Model model, HttpSession session) {
         model.addAttribute("user", session.getAttribute("user"));
         return selectQuestionService.importByTemplate(selectQuestion, model, session, imageFile, audioFile, videoFile);
-    } 
+    }
+    @GetMapping("/import/directWord")
+    public String showDirectWordPage(Model model, HttpSession session) {
+        model.addAttribute("user", session.getAttribute("user"));
+        return "directWord";
+    }
+
+    @GetMapping("/import/directWord/fillQuestion")
+    public String showDirectWordFillQuestionPage(Model model, HttpSession session) {
+        model.addAttribute("user", session.getAttribute("user"));
+        model.addAttribute("fillQuestion", new FillQuestion());
+        return "directWord";
+    }
+    @PostMapping("/import/directWord/fillQuestion")
+    public String handleFormSubmission(@ModelAttribute FillQuestion fillQuestion, Model model) {
+        // 在这里可以处理你的表单数据，可以将数据保存到数据库等
+        // fillQuestion 对象将自动由Thymeleaf绑定
+
+        // 例如，你可以将填充后的 fillQuestion 对象添加到模型中，以便在视图中显示
+        model.addAttribute("filledQuestion", fillQuestion);
+
+        // 这里可以返回一个视图名称，用于显示提交后的结果页面
+        return "redirect:/import/directWord";  // 根据你的需求更改视图名称
+    }
+    @PostMapping("/import/directWord")
+    public String directImportWord(@RequestParam("wordFile") MultipartFile wordFile, Model model, HttpSession session) {
+        Users user = (Users) session.getAttribute("user");
+        model.addAttribute("user", user);
+
+        try (InputStream inputStream = wordFile.getInputStream()) {
+            XWPFDocument document = new XWPFDocument(inputStream);
+            List<String> contentBlocks = extractContentBlocks(document);
+            model.addAttribute("contentBlocks", contentBlocks);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            model.addAttribute("errorMessage", "Error processing the Word file!");
+        }
+        return "directWord";
+    }
+
+    private List<String> extractContentBlocks(XWPFDocument document) {
+        List<String> contentBlocks = new ArrayList<>();
+        StringBuilder currentBlock = new StringBuilder();
+
+        for (XWPFParagraph paragraph : document.getParagraphs()) {
+            String text = paragraph.getText();
+
+            if (text.isEmpty()) {
+                // 遇到空白行，
+                if (currentBlock.length() > 0) {
+                    contentBlocks.add(currentBlock.toString());
+                    currentBlock = new StringBuilder(); // 重置当前块
+                }
+            } else {
+                //添加换行
+                currentBlock.append(text);
+                currentBlock.append("\r\n");
+            }
+        }
+
+        // 处理文档末尾可能的最后一个块
+        if (currentBlock.length() > 0) {
+            contentBlocks.add(currentBlock.toString());
+        }
+        return contentBlocks;
+    }
+
+
     @PostMapping("/import/fromExcel")
     public String importByExcel(@RequestParam("excelFile") MultipartFile excelFile, Model model, HttpSession session) {
         Integer userId;
