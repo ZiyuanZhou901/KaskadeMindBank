@@ -131,7 +131,7 @@ public class ImportController {
                                          Model model, HttpSession session) {
         model.addAttribute("user", session.getAttribute("user"));
         return selectQuestionService.importByTemplate(selectQuestion, model, session, imageFile, audioFile, videoFile);
-    }
+    } 
     @PostMapping("/import/fromExcel")
     public String importByExcel(@RequestParam("excelFile") MultipartFile excelFile, Model model, HttpSession session) {
         Integer userId;

@@ -118,10 +118,57 @@
 
         <div class="container-fluid py-4">
             <div class="row mt-4">
+
+                <div class="col-md-6 mb-lg-0 mb-4 mt-0">
+                    <div class="card z-index-2 h-70">
+                        <div class="card-header pb-0 pt-3 bg-transparent">
+                            <h6 class="text-capitalize">Import Directly</h6>
+                            <p class="text-sm mb-0">
+                                <i class="fa fa-download text-su"></i>
+                                <span class="font-weight-bold">Editable</span>
+                            </p>
+                        </div>
+                        <div class="card-body p-3">
+                            <div class="mt-3">
+                                <div class="d-flex flex-column">
+                                    <form th:action="@{/import/directWord}" method="post" enctype="multipart/form-data">
+                                        <div class="mb-3">
+                                            <label for="wordFile" class="form-label">Upload Your Word File:</label>
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <input type="file" class="form-control" id="wordFile"
+                                                        name="wordFile" accept=".doc, .docx">
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <button type="submit" class="btn btn-primary">Import</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                    <form th:action="@{/import/directExcel}" method="post"
+                                        enctype="multipart/form-data">
+                                        <div class="mb-3">
+                                            <label for="excelFile" class="form-label">Upload Your Excel File:</label>
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <input type="file" class="form-control" id="excelFile"
+                                                        name="excelFile" accept=".xls, .xlsx">
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <button type="submit" class="btn btn-primary">Import</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div class="col-lg-6 mb-lg-0 mb-4 mt-0">
                     <div class="card z-index-2 h-70">
                         <div class="card-header pb-0 pt-3 bg-transparent">
-                            <h6 class="text-capitalize">Import directly</h6>
+                            <h6 class="text-capitalize">Import Single Question</h6>
                             <p class="text-sm mb-0">
                                 <i class="fa fa-download"></i>
                                 <span class="font-weight-bold">Precise&Support Files</span>
@@ -148,10 +195,10 @@
                                 </div>
                             </div>
                         </div>
-
-
                     </div>
                 </div>
+            </div>
+            <div class="row mt-4">
                 <div class="col-lg-6 mb-lg-0 mb-4 mt-0">
                     <div class="card z-index-2 h-70">
                         <div class="card-header pb-0 pt-3 bg-transparent">
@@ -207,25 +254,26 @@
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-md-12 mb-lg-0 mb-4 mt-0">
-                <div class="card mt-4">
-                    <div class="card-header pb-0 p-3">
-                        <div class="row">
-                            <div class="col-6 d-flex align-items-center">
-                                <h4 class="mb-0 font-weight-bold">Accumulation up to now</h4>
-                            </div>
-                            <div class="col-6 text-end">
-                                <a class="btn bg-gradient-dark mb-0" th:href="@{/browse}"><i></i>&nbsp;&nbsp;To see
-                                    more</a>
+                <div class="col-md-6 mb-lg-0 mb-4 mt-0">
+                    <div class="card mt-4">
+                        <div class="card-header pb-0 p-3">
+                            <div class="row">
+                                <div class="col-6 d-flex align-items-center">
+                                    <h4 class="mb-0 font-weight-bold">Accumulation up to now</h4>
+                                </div>
+                                <div class="col-6 text-end">
+                                    <a class="btn bg-gradient-dark mb-0" th:href="@{/browse}"><i></i>&nbsp;&nbsp;To see
+                                        more</a>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="card-body p-3">
-                        <p class="mb-0">Total uploaded questions: <span th:text="${totalUploadedQuestions}"></span>
-                        </p>
-                        <p class="mb-0">Total days using the platform: <span th:text="${totalDaysUsingPlatform}"></span>
-                        </p>
+                        <div class="card-body p-3">
+                            <p class="mb-0">Total uploaded questions: <span th:text="${totalUploadedQuestions}"></span>
+                            </p>
+                            <p class="mb-0">Total days using the platform: <span
+                                    th:text="${totalDaysUsingPlatform}"></span>
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
