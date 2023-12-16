@@ -68,7 +68,7 @@ public class ImportController {
         Integer judgeCount = judgeQuestionMapper.countByUserId(usersMapper.findUserIdByUsername(user.getUserName()));
         Integer selectCount = selectQuestionMapper.countByUserId(usersMapper.findUserIdByUsername(user.getUserName()));
         Integer totalCount = fillCount + judgeCount + selectCount;
-
+        model.addAttribute("successMessage", session.getAttribute("successMessage"));
         model.addAttribute("fillCount", fillCount);
         model.addAttribute("judgeCount", judgeCount);
         model.addAttribute("selectCount", selectCount);
