@@ -25,4 +25,7 @@ public interface SelectQuestionMapper extends BaseMapper<SelectQuestion> {
 
     @Select("SELECT * FROM selectQuestion WHERE userId = #{userId} and picFile is null and voiFile is null and vidFile is null")
     List<SelectQuestion> findSelectQuestionsByUserIdWoFile(Integer userIdByUsername);
+
+    @Select("SELECT COUNT(*) FROM selectQuestion WHERE userId = #{userId}")
+    Integer countByUserId(@Param("userId") Integer userId);
 }

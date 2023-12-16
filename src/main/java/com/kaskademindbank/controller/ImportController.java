@@ -14,6 +14,7 @@ import com.kaskademindbank.service.IJudgeQuestionService;
 import com.kaskademindbank.service.ISelectQuestionService;
 import com.kaskademindbank.service.IUsersService;
 import jakarta.servlet.http.HttpSession;
+import org.apache.catalina.User;
 import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
@@ -32,13 +33,13 @@ import java.awt.desktop.SystemEventListener;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.invoke.SwitchPoint;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 import static java.util.Objects.isNull;
 
@@ -61,10 +62,22 @@ public class ImportController {
 
     @GetMapping("/import")
     public String showImportPage(Model model, HttpSession session) {
-        model.addAttribute("successMessage", session.getAttribute("successMessage"));
-        model.addAttribute("user", session.getAttribute("user"));
+        Users user = (Users) session.getAttribute("user");
+
+        Integer fillCount = fillQuestionMapper.countByUserId(usersMapper.findUserIdByUsername(user.getUserName()));
+        Integer judgeCount = judgeQuestionMapper.countByUserId(usersMapper.findUserIdByUsername(user.getUserName()));
+        Integer selectCount = selectQuestionMapper.countByUserId(usersMapper.findUserIdByUsername(user.getUserName()));
+        Integer totalCount = fillCount + judgeCount + selectCount;
+
+        model.addAttribute("fillCount", fillCount);
+        model.addAttribute("judgeCount", judgeCount);
+        model.addAttribute("selectCount", selectCount);
+        model.addAttribute("totalCount", totalCount);
+        model.addAttribute("user", user);
+
         return "import";
     }
+
 
     @GetMapping("/import/template/fillQuestion")
     public String showTemplateImportPage(Model model, HttpSession session) {

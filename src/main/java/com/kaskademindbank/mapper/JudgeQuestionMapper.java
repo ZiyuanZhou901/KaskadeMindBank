@@ -24,4 +24,6 @@ public interface JudgeQuestionMapper extends BaseMapper<JudgeQuestion> {
     List<JudgeQuestion> findJudgeQuestionsByUserId(Integer userIdByUsername);
     @Select("SELECT * FROM judgeQuestion WHERE userId = #{userId} and picFile is null and voiFile is null and vidFile is null")
     List<JudgeQuestion> findJudgeQuestionsByUserIdWoFile(Integer userIdByUsername);
+    @Select("SELECT COUNT(*) FROM judgeQuestion WHERE userId = #{userId}")
+    Integer countByUserId(Integer userIdByUsername);
 }
