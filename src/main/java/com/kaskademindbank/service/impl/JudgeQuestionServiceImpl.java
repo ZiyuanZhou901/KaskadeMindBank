@@ -140,4 +140,18 @@ public class JudgeQuestionServiceImpl extends ServiceImpl<JudgeQuestionMapper, J
         judgeQuestionMapper.updateById(existingQuestion);
         return "redirect:/browse/judge/"+questionId;
     }
+
+    @Override
+    public String directJudgeQuestion(JudgeQuestion judgeQuestion, Model model, HttpSession session) {
+        Users user = (Users) session.getAttribute("user");
+        if (user != null) {
+            judgeQuestion.setUserId(usersMapper.findUserIdByUsername(user.getUserName()));
+        }
+        judgeQuestion.setUpTime(LocalDateTime.now());
+        judgeQuestionMapper.insert(judgeQuestion);
+        session.setAttribute("contentBlocks",model.getAttribute("contentBlocks"));
+        session.setAttribute("successMessage", "Successfully imported judge question");
+
+        return "redirect:/import/directWord";
+    }
 }

@@ -105,6 +105,20 @@ public class FillQuestionServiceImpl extends ServiceImpl<FillQuestionMapper, Fil
     public List<String> getUploadedSubjectsByUserId(Integer userId) {
         return fillQuestionMapper.findSubjectsByUserId(userId);
     }
+ 
+    @Override
+    public String directFillQuestion(FillQuestion fillQuestion, Model model, HttpSession session) {
+        Users user = (Users) session.getAttribute("user");
+        if (user != null) {
+            fillQuestion.setUserId(usersMapper.findUserIdByUsername(user.getUserName()));
+        }
+        fillQuestion.setUpTime(LocalDateTime.now());
+        fillQuestionMapper.insert(fillQuestion);
+        session.setAttribute("contentBlocks",model.getAttribute("contentBlocks"));
+        session.setAttribute("successMessage", "Successfully imported fill question");
+
+        return "redirect:/import/directWord";
+    }
 
     @Override
     public String editFillQuestion(FillQuestion fillQuestion, Model model, HttpSession session, MultipartFile imageFile, MultipartFile audioFile, MultipartFile videoFile) {

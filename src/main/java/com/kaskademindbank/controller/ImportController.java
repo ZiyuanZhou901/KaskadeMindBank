@@ -137,45 +137,73 @@ public class ImportController {
         model.addAttribute("user", session.getAttribute("user"));
         return selectQuestionService.importByTemplate(selectQuestion, model, session, imageFile, audioFile, videoFile);
     }
-    @GetMapping("/import/directWord")
-    public String showDirectWordPage(Model model, HttpSession session) {
-        model.addAttribute("user", session.getAttribute("user"));
-        return "directWord";
-    }
 
     @GetMapping("/import/directWord/fillQuestion")
     public String showDirectWordFillQuestionPage(Model model, HttpSession session) {
         model.addAttribute("user", session.getAttribute("user"));
+        model.addAttribute("contentBlocks", session.getAttribute("contentBlocks"));
         model.addAttribute("fillQuestion", new FillQuestion());
-        return "directWord";
+        return "directWordFill";
     }
     @PostMapping("/import/directWord/fillQuestion")
-    public String handleFormSubmission(@ModelAttribute FillQuestion fillQuestion, Model model) {
-        // 在这里可以处理你的表单数据，可以将数据保存到数据库等
-        // fillQuestion 对象将自动由Thymeleaf绑定
+    public String handleFormSubmission(@ModelAttribute FillQuestion fillQuestion, Model model,HttpSession session) {
+        model.addAttribute("user", session.getAttribute("user"));
+        model.addAttribute("contentBlocks", session.getAttribute("contentBlocks"));
+        return fillQuestionService.directFillQuestion(fillQuestion,model,session);  // 根据你的需求更改视图名称
+    }
+    @GetMapping("/import/directWord/judgeQuestion")
+    public String showDirectWordJudgeQuestionPage(Model model, HttpSession session) {
+        model.addAttribute("user", session.getAttribute("user"));
+        model.addAttribute("contentBlocks", session.getAttribute("contentBlocks"));
+        model.addAttribute("judgeQuestion", new JudgeQuestion());
+        return "directWordJudge";
+    }
 
-        // 例如，你可以将填充后的 fillQuestion 对象添加到模型中，以便在视图中显示
-        model.addAttribute("filledQuestion", fillQuestion);
+    @PostMapping("/import/directWord/judgeQuestion")
+    public String handleJudgeQuestionFormSubmission(@ModelAttribute JudgeQuestion judgeQuestion, Model model, HttpSession session) {
+        model.addAttribute("user", session.getAttribute("user"));
+        model.addAttribute("contentBlocks", session.getAttribute("contentBlocks"));
+        return judgeQuestionService.directJudgeQuestion(judgeQuestion, model, session);
+    }
 
-        // 这里可以返回一个视图名称，用于显示提交后的结果页面
-        return "redirect:/import/directWord";  // 根据你的需求更改视图名称
+    @GetMapping("/import/directWord/selectQuestion")
+    public String showDirectWordSelectQuestionPage(Model model, HttpSession session) {
+        model.addAttribute("user", session.getAttribute("user"));
+        model.addAttribute("contentBlocks", session.getAttribute("contentBlocks"));
+        model.addAttribute("selectQuestion", new SelectQuestion());
+        return "directWordSelect";
+    }
+
+    @PostMapping("/import/directWord/selectQuestion")
+    public String handleSelectQuestionFormSubmission(@ModelAttribute SelectQuestion selectQuestion, Model model, HttpSession session) {
+        model.addAttribute("user", session.getAttribute("user"));
+        model.addAttribute("contentBlocks", session.getAttribute("contentBlocks"));
+        return selectQuestionService.directSelectQuestion(selectQuestion, model, session);
+    }
+
+    @GetMapping("/import/directWord")
+    public String showDirectWordPage(Model model, HttpSession session) {
+        model.addAttribute("user", session.getAttribute("user"));
+        model.addAttribute("contentBlocks", session.getAttribute("contentBlocks"));
+        model.addAttribute("successMessage", session.getAttribute("successMessage"));
+        return "directWord";
     }
     @PostMapping("/import/directWord")
     public String directImportWord(@RequestParam("wordFile") MultipartFile wordFile, Model model, HttpSession session) {
         Users user = (Users) session.getAttribute("user");
         model.addAttribute("user", user);
-
         try (InputStream inputStream = wordFile.getInputStream()) {
             XWPFDocument document = new XWPFDocument(inputStream);
             List<String> contentBlocks = extractContentBlocks(document);
             model.addAttribute("contentBlocks", contentBlocks);
-
+            session.setAttribute("contentBlocks", contentBlocks);
         } catch (IOException e) {
             e.printStackTrace();
             model.addAttribute("errorMessage", "Error processing the Word file!");
         }
         return "directWord";
     }
+
 
     private List<String> extractContentBlocks(XWPFDocument document) {
         List<String> contentBlocks = new ArrayList<>();

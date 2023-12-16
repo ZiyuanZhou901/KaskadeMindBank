@@ -28,4 +28,5 @@ public interface ISelectQuestionService extends IService<SelectQuestion> {
     List<String> getUploadedSubjectsByUserId(Integer userId);
 
     String editSelectQuestion(SelectQuestion selectQuestion, Model model, HttpSession session, MultipartFile imageFile, MultipartFile audioFile, MultipartFile videoFile);
+    String directSelectQuestion(SelectQuestion selectQuestion, Model model, HttpSession session);
 }

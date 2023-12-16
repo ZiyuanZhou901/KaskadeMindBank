@@ -28,4 +28,6 @@ public interface IJudgeQuestionService extends IService<JudgeQuestion> {
     List<String> getUploadedSubjectsByUserId(Integer userId);
 
     String editJudgeQuestion(JudgeQuestion judgeQuestion, Model model, HttpSession session, MultipartFile imageFile, MultipartFile audioFile, MultipartFile videoFile);
+
+    String directJudgeQuestion(JudgeQuestion judgeQuestion, Model model, HttpSession session);
 }

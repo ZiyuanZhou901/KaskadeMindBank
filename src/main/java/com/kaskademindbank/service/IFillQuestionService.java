@@ -27,6 +27,6 @@ public interface IFillQuestionService extends IService<FillQuestion> {
                             @RequestParam("videoFile") MultipartFile videoFile);
 
     List<String> getUploadedSubjectsByUserId(Integer userId);
-
+    String directFillQuestion(FillQuestion fillQuestion, Model model, HttpSession session);
     String editFillQuestion(FillQuestion fillQuestion, Model model, HttpSession session, MultipartFile imageFile, MultipartFile audioFile, MultipartFile videoFile);
 }

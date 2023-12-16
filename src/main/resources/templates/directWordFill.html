@@ -104,9 +104,7 @@
                     <h6 class="font-weight-bolder text-white mb-0">Hi~ <span th:text="${user.userName}"></span>
                     </h6>
                 </nav>
-                <div th:if="${successMessage}" class="successMessage text-white">
-                    <p th:text="${successMessage}"></p>
-                </div>
+
             </div>
         </nav>
         <!-- End Navbar -->
@@ -135,23 +133,50 @@
                                             <p>
                                                 <button class="btn btn-primary me-2 " type="button"
                                                     data-bs-toggle="collapse" data-bs-target="#fill"
-                                                    aria-expanded="false" aria-controls="fill" onclick="openFill()">
+                                                    aria-expanded="true" aria-controls="fill">
                                                     Fill
                                                 </button>
                                                 <button class="btn btn-primary me-2" type="button"
                                                     data-bs-toggle="collapse" data-bs-target="#judge"
-                                                    aria-expanded="false" aria-controls="judge" onclick="openJudge()">
+                                                    aria-expanded="false" aria-controls="judge">
                                                     Judge
                                                 </button>
                                                 <button class="btn btn-primary" type="button" data-bs-toggle="collapse"
                                                     data-bs-target="#select" aria-expanded="false"
-                                                    onclick="openSelect()" aria-controls="select">
+                                                    aria-controls="select">
                                                     Select
                                                 </button>
                                             </p>
-                                            <div class="collapse" id="fill">
+                                            <div class="collapse show" id="fill">
                                                 <div class="card card-body">
-                                                    fill
+                                                    <form th:action="@{/import/directWord/fillQuestion}"
+                                                        th:object="${fillQuestion}" method="post"
+                                                        enctype="multipart/form-data">
+                                                        <div class="col-lg-6">
+                                                            <div class="mb-3">
+                                                                <label for="subject" class="form-label">Subject:</label>
+                                                                <input type="text" class="form-control" id="subject"
+                                                                    name="subject" th:field="*{subject}" required>
+                                                            </div>
+
+                                                            <div class="mb-3">
+                                                                <label for="description"
+                                                                    class="form-label">Description:</label>
+                                                                <input type="text" class="form-control" id="description"
+                                                                    name="description" th:field="*{description}"
+                                                                    required>
+                                                            </div>
+
+                                                            <div class="mb-3">
+                                                                <label for="answer" class="form-label">Answer:</label>
+                                                                <input type="text" class="form-control" id="answer"
+                                                                    name="answer" th:field="*{answer}" required>
+                                                            </div>
+
+                                                            <button type="submit"
+                                                                class="btn btn-primary">Import</button>
+                                                        </div>
+                                                    </form>
                                                 </div>
                                             </div>
                                             <div class="collapse" id="judge">
@@ -402,7 +427,6 @@
                         // 获取当前按钮的展开状态
                         var isExpanded = this.getAttribute('aria-expanded') === 'true';
 
-                        // 如果展开，禁用其他按钮；否则启用其他按钮
                         collapseButtons.forEach(function (otherButton) {
                             if (otherButton !== button) {
                                 otherButton.disabled = isExpanded;
@@ -412,21 +436,6 @@
                 });
             });
         });
-    </script>
-    <script>
-        function openFill() {
-            window.location.href = "/import/directWord/fillQuestion";
-        }
-    </script>
-    <script>
-        function openJudge() {
-            window.location.href = "/import/directWord/judgeQuestion";
-        }
-    </script>
-    <script>
-        function openSelect() {
-            window.location.href = "/import/directWord/selectQuestion";
-        }
     </script>
 </body>
 

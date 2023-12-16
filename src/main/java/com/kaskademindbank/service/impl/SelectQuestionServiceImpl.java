@@ -137,4 +137,19 @@ public class SelectQuestionServiceImpl extends ServiceImpl<SelectQuestionMapper,
         selectQuestionMapper.updateById(existingQuestion);
         return "redirect:/browse/select/"+questionId;
     }
+
+    @Override
+    public String directSelectQuestion(SelectQuestion selectQuestion, Model model, HttpSession session) {
+
+        Users user = (Users) session.getAttribute("user");
+        if (user != null) {
+            selectQuestion.setUserId(usersMapper.findUserIdByUsername(user.getUserName()));
+        }
+        selectQuestion.setUpTime(LocalDateTime.now());
+        selectQuestionMapper.insert(selectQuestion);
+        session.setAttribute("contentBlocks",model.getAttribute("contentBlocks"));
+        session.setAttribute("successMessage", "Successfully imported select question");
+
+        return "redirect:/import/directWord";
+    }
 }
