@@ -19,7 +19,7 @@ public class SelectQuestion implements Serializable {
 
     @TableId(value = "squestionId", type = IdType.AUTO)
     private Integer squestionId;
-
+   
     private String subject;
 
     private String description;

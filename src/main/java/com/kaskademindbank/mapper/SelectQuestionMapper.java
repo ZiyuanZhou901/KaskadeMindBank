@@ -22,4 +22,7 @@ public interface SelectQuestionMapper extends BaseMapper<SelectQuestion> {
     List<String> findSubjectsByUserId(@Param("userId") Integer userId);
     @Select("SELECT * FROM selectQuestion WHERE userId = #{userId}")
     List<SelectQuestion> findSelectQuestionsByUserId(Integer userIdByUsername);
+
+    @Select("SELECT * FROM selectQuestion WHERE userId = #{userId} and picFile is null and voiFile is null and vidFile is null")
+    List<SelectQuestion> findSelectQuestionsByUserIdWoFile(Integer userIdByUsername);
 }

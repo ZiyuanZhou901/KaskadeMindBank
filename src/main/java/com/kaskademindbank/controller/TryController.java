@@ -52,5 +52,38 @@ public class TryController {
         model.addAttribute("fillQuestions", fillQuestions);
         return "tryFill";
     }
+    @GetMapping("/tryitJudge")
+    public String tryJudgePage(Model model, HttpSession session) {
+        Users user = (Users) session.getAttribute("user");
+        List<JudgeQuestion> judgeQuestions = judgeQuestionMapper.findJudgeQuestionsByUserIdWoFile(usersMapper.findUserIdByUsername(user.getUserName()));
+        judgeQuestions.sort(new Comparator<JudgeQuestion>() {
+            @Override
+            public int compare(JudgeQuestion o1, JudgeQuestion o2) {
+                return (int) (Math.random() * 10) - 5;
+            }
+        });
+
+        model.addAttribute("user", user);
+        session.setAttribute("user", user);
+        model.addAttribute("judgeQuestions", judgeQuestions);
+        return "tryJudge";
+    }
+
+    @GetMapping("/tryitSelect")
+    public String trySelectPage(Model model, HttpSession session) {
+        Users user = (Users) session.getAttribute("user");
+        List<SelectQuestion> selectQuestions = selectQuestionMapper.findSelectQuestionsByUserIdWoFile(usersMapper.findUserIdByUsername(user.getUserName()));
+        selectQuestions.sort(new Comparator<SelectQuestion>() {
+            @Override
+            public int compare(SelectQuestion o1, SelectQuestion o2) {
+                return (int) (Math.random() * 10) - 5;
+            }
+        });
+
+        model.addAttribute("user", user);
+        session.setAttribute("user", user);
+        model.addAttribute("selectQuestions", selectQuestions);
+        return "trySelect";
+    }
 
 }
