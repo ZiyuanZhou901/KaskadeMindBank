@@ -23,4 +23,7 @@ public interface FillQuestionMapper extends BaseMapper<FillQuestion> {
     List<String> findSubjectsByUserId(@Param("userId") Integer userId);
     @Select("SELECT * FROM fillQuestion WHERE userId = #{userId}")
     List<FillQuestion> findFillQuestionsByUserId(Integer userIdByUsername);
+
+    @Select("SELECT * FROM fillQuestion WHERE userId = #{userId} and picFile is null and voiFile is null and vidFile is null")
+    List<FillQuestion> findFillQuestionsByUserIdWoFile(Integer userIdByUsername);
 }

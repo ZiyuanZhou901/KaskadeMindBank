@@ -102,7 +102,6 @@ public class BrowseController {
         session.setAttribute("user", user);
         model.addAttribute("currentPage", page);
         model.addAttribute("successDeleteMessage", session.getAttribute("successDeleteMessage"));
-        System.out.println(totalPage);
         return "browse_overview";
     }
 
