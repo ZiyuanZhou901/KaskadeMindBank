@@ -302,8 +302,10 @@
             <div class="modal-footer no-margin-top text-center">
                 <ul class="pagination no-margin align-middle">
                     <button class="btn btn-primary" style="margin-right: 10px;" onclick="toEdit()">Edit</button>
+                    <button class="btn btn-primary" style="margin-right: 10px;" onclick="toDelete()">Delete</button>
                 </ul>
             </div>
+
 
             <footer class="footer py-5">
                 <div class="container">
@@ -426,6 +428,10 @@
     <script>
         function toEdit() {
             var targetUrl = "/edit"
+            window.location.href = targetUrl;
+        }
+        function toDelete() {
+            var targetUrl = "/delete"
             window.location.href = targetUrl;
         }
     </script>

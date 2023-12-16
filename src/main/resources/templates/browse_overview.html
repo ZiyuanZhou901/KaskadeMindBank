@@ -102,6 +102,9 @@
                     <h6 class="font-weight-bolder text-white mb-0">Hi~ <span th:text="${user.userName}"></span>
                     </h6>
                 </nav>
+                <div th:if="${successDeleteMessage}" class="successMessage text-white">
+                    <p th:text="${successDeleteMessage}"></p>
+                </div>
             </div>
         </nav>
         <!-- End Navbar -->

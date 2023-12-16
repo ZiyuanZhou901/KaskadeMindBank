@@ -63,7 +63,6 @@ public class BrowseController {
     @GetMapping("/browse")
     public String browseOverview(Model model, HttpSession session, @RequestParam(defaultValue = "1") int page,@RequestParam(defaultValue = "10") int pageSize) {
         Users user = (Users) session.getAttribute("user");
-
         List<FillQuestion> fillQuestions = fillQuestionMapper.findFillQuestionsByUserId(usersMapper.findUserIdByUsername(user.getUserName()));
         List<JudgeQuestion> judgeQuestions = judgeQuestionMapper.findJudgeQuestionsByUserId(usersMapper.findUserIdByUsername(user.getUserName()));
         List<SelectQuestion> selectQuestions = selectQuestionMapper.findSelectQuestionsByUserId(usersMapper.findUserIdByUsername(user.getUserName()));
@@ -102,6 +101,7 @@ public class BrowseController {
         model.addAttribute("user", user);
         session.setAttribute("user", user);
         model.addAttribute("currentPage", page);
+        model.addAttribute("successDeleteMessage", session.getAttribute("successDeleteMessage"));
         System.out.println(totalPage);
         return "browse_overview";
     }
@@ -156,6 +156,24 @@ public class BrowseController {
             model.addAttribute("question", selectQuestion);
         }
         return "edit";
+    }
+
+    @GetMapping("/delete")
+    public String deleteQuestion(Model model, HttpSession session) {
+        Users user = (Users) session.getAttribute("user");
+        model.addAttribute("user", user);
+        String type = (String) session.getAttribute("type");
+        Integer questionId = (Integer) session.getAttribute("questionId");
+        session.setAttribute("questionId", questionId);
+        if ("fill".equals(type)) {
+            fillQuestionMapper.deleteById(questionId);
+        } else if ("judge".equals(type)) {
+            judgeQuestionMapper.deleteById(questionId);
+        } else if ("select".equals(type)) {
+            selectQuestionMapper.deleteById(questionId);
+        }
+        session.setAttribute("successDeleteMessage", "Successfully deleting question");
+        return "redirect:/browse";
     }
     @PostMapping("/edit/fillQuestion")
     public String editFillQuestion(FillQuestion fillQuestion,
