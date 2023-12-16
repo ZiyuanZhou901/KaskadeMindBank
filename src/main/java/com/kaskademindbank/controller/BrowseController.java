@@ -61,10 +61,9 @@ public class BrowseController {
     @Autowired
     ISelectQuestionService selectQuestionService;
     @GetMapping("/browse")
-    public String browseOverview(Model model, HttpSession session, @RequestParam(defaultValue = "1") int page) {
+    public String browseOverview(Model model, HttpSession session, @RequestParam(defaultValue = "1") int page,@RequestParam(defaultValue = "10") int pageSize) {
         Users user = (Users) session.getAttribute("user");
 
-        int pageSize = 10;
         List<FillQuestion> fillQuestions = fillQuestionMapper.findFillQuestionsByUserId(usersMapper.findUserIdByUsername(user.getUserName()));
         List<JudgeQuestion> judgeQuestions = judgeQuestionMapper.findJudgeQuestionsByUserId(usersMapper.findUserIdByUsername(user.getUserName()));
         List<SelectQuestion> selectQuestions = selectQuestionMapper.findSelectQuestionsByUserId(usersMapper.findUserIdByUsername(user.getUserName()));
@@ -102,6 +101,7 @@ public class BrowseController {
         model.addAttribute("pageInfo", pageInfo);
         model.addAttribute("user", user);
         session.setAttribute("user", user);
+        model.addAttribute("currentPage", page);
         System.out.println(totalPage);
         return "browse_overview";
     }

@@ -62,12 +62,6 @@ public class JudgeQuestionServiceImpl extends ServiceImpl<JudgeQuestionMapper, J
         }
         // 3. 设置其他属性，比如 upTime 等
         judgeQuestion.setUpTime(LocalDateTime.now());
-        // 4. 设置答案为 1（正确），可以根据实际需要调整
-        if ("correct".equals(judgeQuestion.getAnswer())) {
-            judgeQuestion.setAnswer("1"); // 如果选择的是 "Correct"，设置为 "1"
-        } else {
-            judgeQuestion.setAnswer("0"); // 如果选择的是 "Incorrect"，设置为 "0"
-        }
 
         try {
             if (!imageFile.isEmpty()) {

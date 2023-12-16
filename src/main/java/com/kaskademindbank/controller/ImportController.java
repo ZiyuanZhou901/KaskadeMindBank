@@ -63,7 +63,6 @@ public class ImportController {
     public String showImportPage(Model model, HttpSession session) {
         model.addAttribute("successMessage", session.getAttribute("successMessage"));
         model.addAttribute("user", session.getAttribute("user"));
-        model.addAttribute("success", session.getAttribute("success"));
         return "import";
     }
 
@@ -261,7 +260,7 @@ public class ImportController {
                     }
                 }
 
-                session.setAttribute("success", "Excel File imported successfully!");
+                session.setAttribute("successMessage", "Excel File imported successfully!");
             } catch (IOException | EncryptedDocumentException e) {
                 e.printStackTrace();
                 model.addAttribute("errorMessage", "File is empty!");
@@ -410,7 +409,7 @@ public class ImportController {
                 inputStream.close();
 
                 // Add a success message to the model
-                session.setAttribute("success", "Word File imported successfully!");
+                session.setAttribute("successMessage", "Word File imported successfully!");
             } else {
                 // Add an error message to the model if the file is empty
                 model.addAttribute("errorMessage", "File is empty!");

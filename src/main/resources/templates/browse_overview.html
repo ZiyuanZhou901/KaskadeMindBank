@@ -158,7 +158,7 @@
                                             </td>
                                             <!-- <td th:text="${questionOverview.type}"></td> -->
                                             <td class="align-middle text-sm">
-                                                <span class="badge badge-sm bg-gradient-success"
+                                                <span class="badge badge-sm bg-gradient-info"
                                                     th:text="${questionOverview.subject}"></span>
                                             </td>
                                             <td>
@@ -170,8 +170,9 @@
 
                                             <td class="align-middle text-center">
                                                 <span class="text-secondary text-xs font-weight-bold"
-                                                    th:text="${questionOverview.upTime}"></span>
+                                                    th:text="${#temporals.format(questionOverview.upTime, 'yyyy-MM-dd HH:mm:ss')}"></span>
                                             </td>
+
                                             <!-- <td th:text="${questionOverview.upTime}"></td> -->
 
                                             <td class="align-middle">
@@ -189,9 +190,21 @@
                                 </table>
                                 <div class="modal-footer no-margin-top text-center">
                                     <ul class="pagination no-margin align-middle">
-                                        <button id="exportButton" class="btn btn-primary"
+                                        <button id="exportButton" class="btn bg-gradient-info"
                                             style="margin-right: 10px;">Export</button>
-                                        <button class="btn btn-primary">Show All</button>
+
+                                        <button class="btn bg-gradient-info dropdown-toggle" type="button"
+                                            id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                                            Show...
+                                        </button>
+                                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                            <li><a class="dropdown-item" th:href="@{/browse?pageSize=10}">10</a></li>
+                                            <li><a class="dropdown-item" th:href="@{/browse?pageSize=15}">15</a></li>
+                                            <li><a class="dropdown-item" th:href="@{/browse?pageSize=20}">20</a></li>
+                                            <li><a class="dropdown-item" th:href="@{/browse?pageSize=10000}">ALL</a>
+                                            </li>
+                                        </ul>
+
                                     </ul>
                                 </div>
 
@@ -204,7 +217,11 @@
                                         </li>
                                     </ul>
                                 </div>
-
+                                <div class="modal-footer no-margin-top text-center">
+                                    <div class="page-info">
+                                        <p th:text="'Page ' + ${currentPage} + ' of ' + ${totalPage}"></p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
