@@ -15,7 +15,7 @@ import java.util.List;
  *
  * @author ZiyuanZhou
  * @since 2023-11-28
- */       
+ */
 @Mapper
 public interface JudgeQuestionMapper extends BaseMapper<JudgeQuestion> {
     @Select("SELECT DISTINCT subject FROM judgeQuestion WHERE userId = #{userId}")

@@ -51,7 +51,7 @@ public class TryController {
         session.setAttribute("user", user);
         model.addAttribute("fillQuestions", fillQuestions);
         return "tryFill";
-    }
+    }   
     @GetMapping("/tryitJudge")
     public String tryJudgePage(Model model, HttpSession session) {
         Users user = (Users) session.getAttribute("user");
