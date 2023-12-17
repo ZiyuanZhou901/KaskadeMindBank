@@ -22,6 +22,7 @@ import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
 import org.apache.tika.Tika;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -35,6 +36,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -60,6 +62,8 @@ public class BrowseController {
     IJudgeQuestionService judgeQuestionService;
     @Autowired
     ISelectQuestionService selectQuestionService;
+    @Value("${file.path}")
+    private String uploadPath;
     @GetMapping("/browse")
     public String browseOverview(Model model, HttpSession session, @RequestParam(defaultValue = "1") int page,@RequestParam(defaultValue = "10") int pageSize) {
         Users user = (Users) session.getAttribute("user");
@@ -329,7 +333,8 @@ public class BrowseController {
     private void insertImage(XWPFDocument document, String picPath) {
         try {
             // 图片存储在项目根目录下的一级目录upload
-            byte[] bytes = Files.readAllBytes(Paths.get("upload/" + picPath));
+            byte[] bytes = Files.readAllBytes(Path.of(uploadPath, picPath));
+
 
             // 使用 Apache Tika 获取文件的真实类型
             Tika tika = new Tika();
