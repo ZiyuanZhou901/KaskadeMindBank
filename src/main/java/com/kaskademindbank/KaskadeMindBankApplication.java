@@ -18,11 +18,6 @@ public class KaskadeMindBankApplication implements WebMvcConfigurer {
     }
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        /*
-         *  资源映射路径
-         *  addResourceHandler:访问映射路径
-         *  addResourceLocations:资源的绝对路径
-         */
         registry.addResourceHandler("/upload/**").addResourceLocations("file:/Users/23Fall/JAVA/upload/");
     }
 

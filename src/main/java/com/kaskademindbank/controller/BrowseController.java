@@ -118,16 +118,32 @@ public class BrowseController {
             model.addAttribute("question", fillQuestion);
             String picD="/upload/"+fillQuestion.getPicFile();
             model.addAttribute("picD",picD);
+            String voiD="/upload/"+fillQuestion.getVoiFile();
+            model.addAttribute("voiD",voiD);
+            String vidD="/upload/"+fillQuestion.getVidFile();
+            model.addAttribute("vidD",vidD);
         } else if ("judge".equals(questionType)) {
             JudgeQuestion judgeQuestion = judgeQuestionMapper.selectById(questionId);
             model.addAttribute("type", "judge");
             session.setAttribute("type", "judge");
             model.addAttribute("question", judgeQuestion);
+            String picD="/upload/"+judgeQuestion.getPicFile();
+            model.addAttribute("picD",picD);
+            String voiD="/upload/"+judgeQuestion.getVoiFile();
+            model.addAttribute("voiD",voiD);
+            String vidD="/upload/"+judgeQuestion.getVidFile();
+            model.addAttribute("vidD",vidD);
         } else if ("select".equals(questionType)) {
             SelectQuestion selectQuestion = selectQuestionMapper.selectById(questionId);
             model.addAttribute("type", "select");
             session.setAttribute("type", "select");
             model.addAttribute("question", selectQuestion);
+            String picD="/upload/"+selectQuestion.getPicFile();
+            model.addAttribute("picD",picD);
+            String voiD="/upload/"+selectQuestion.getVoiFile();
+            model.addAttribute("voiD",voiD);
+            String vidD="/upload/"+selectQuestion.getVidFile();
+            model.addAttribute("vidD",vidD);
         }
         System.out.println(model.getAttribute("type"));
         session.setAttribute("questionId", questionId);

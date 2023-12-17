@@ -33,8 +33,7 @@
             <!-- <h3 class="font-weight-bolder text-uppercase text-center">Kaskade MindBank</h3> -->
             <i class="fas fa-times p-3 cursor-pointer text-secondary opacity-5 position-absolute end-0 top-0 d-none d-xl-none"
                 aria-hidden="true" id="iconSidenav"></i>
-            <a class="navbar-brand m-0" href=" https://demos.creative-tim.com/argon-dashboard/pages/dashboard.html "
-                target="_blank">
+            <a class="navbar-brand m-0" target="_blank">
                 <img th:src="@{/img/waterfall.png}" class="navbar-brand-img h-100" alt="main_logo">
                 <span class="ms-1 font-weight-bold">Kaskade MindBank</span>
             </a>
@@ -182,8 +181,7 @@
 
                                 <video controls th:if="${question.vidFile != null}">
                                     <!-- 使用 Thymeleaf 设置视频文件的URL -->
-                                    <source th:src="@{/upload/{filename}(filename=${question.vidFile})}"
-                                        type="video/mp4">
+                                    <source th:src="@{${vidD}}" type="video/mp4">
                                     Your browser does not support the video element.
                                 </video>
                             </div>
@@ -272,8 +270,7 @@
                             <div class="card-body">
                                 <audio controls th:if="${question.voiFile != null}">
                                     <!-- 使用 Thymeleaf 设置音频文件的URL -->
-                                    <source th:src="@{/upload/{filename}(filename=${question.voiFile})}"
-                                        type="audio/mpeg">
+                                    <source th:src="@{${voiD}}" type="audio/mpeg">
                                     Your browser does not support the audio element.
                                 </audio>
                             </div>
