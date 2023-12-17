@@ -1,6 +1,5 @@
 package com.kaskademindbank.controller;
 
-import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.kaskademindbank.entity.FillQuestion;
 import com.kaskademindbank.entity.JudgeQuestion;
 import com.kaskademindbank.entity.SelectQuestion;
@@ -12,15 +11,13 @@ import com.kaskademindbank.mapper.UsersMapper;
 import com.kaskademindbank.service.IFillQuestionService;
 import com.kaskademindbank.service.IJudgeQuestionService;
 import com.kaskademindbank.service.ISelectQuestionService;
-import com.kaskademindbank.service.IUsersService;
 import jakarta.servlet.http.HttpSession;
-import org.apache.catalina.User;
 import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
-import org.apache.poi.xwpf.usermodel.XWPFDocument;
-import org.apache.poi.xwpf.usermodel.XWPFParagraph;
+import org.apache.poi.xwpf.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,19 +26,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.awt.desktop.SystemEventListener;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.invoke.SwitchPoint;
-import java.time.LocalDate;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Stream;
-
-import static java.util.Objects.isNull;
 
 @Controller
 public class ImportController {
@@ -59,7 +50,8 @@ public class ImportController {
     JudgeQuestionMapper judgeQuestionMapper;
     @Autowired
     SelectQuestionMapper selectQuestionMapper;
-
+    @Value("${file.path}")
+    private String uploadPath;
     @GetMapping("/import")
     public String showImportPage(Model model, HttpSession session) {
         Users user = (Users) session.getAttribute("user");
@@ -161,7 +153,7 @@ public class ImportController {
     public String handleFormSubmission(@ModelAttribute FillQuestion fillQuestion, Model model,HttpSession session) {
         model.addAttribute("user", session.getAttribute("user"));
         model.addAttribute("contentBlocks", session.getAttribute("contentBlocks"));
-        return fillQuestionService.directFillQuestion(fillQuestion,model,session);  // 根据你的需求更改视图名称
+        return fillQuestionService.directFillQuestion(fillQuestion,model,session);
     }
     @GetMapping("/import/directWord/judgeQuestion")
     public String showDirectWordJudgeQuestionPage(Model model, HttpSession session) {
@@ -416,7 +408,7 @@ public class ImportController {
 
                 String textContent = extractor.getText();
 
-                processWordContent(textContent,userId);
+                processWordContent(textContent, userId, document);
 
                 extractor.close();
                 inputStream.close();
@@ -437,8 +429,9 @@ public class ImportController {
         // Redirect to the import page
         return "redirect:/import";
     }
-    private void processWordContent(String textContent, Integer userId) {
+    private void processWordContent(String textContent, Integer userId, XWPFDocument document) {
         String[] lines = textContent.split("\\r?\\n");
+        Iterator<XWPFPictureData> pictures = document.getAllPictures().iterator();
 
         for (int i = 0; i < lines.length; i++) {
             String line = lines[i];
@@ -453,6 +446,21 @@ public class ImportController {
 
                 i++;
                 currentFillQuestion.setAnswer(lines[i].split("：")[1]);
+                Integer flag=i+1;
+                String line1=lines[flag];
+                if (line1.startsWith("图片：")) {
+                    if (pictures.hasNext()) {
+                        XWPFPictureData picture = pictures.next();
+                        try {
+                            // 图片处理逻辑
+                            currentFillQuestion.setPicFile(processImage(picture));
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        System.err.println("没有足够的图片用于处理: " + line);
+                    }
+                }
                 currentFillQuestion.setUserId(userId);
                 currentFillQuestion.setUpTime(LocalDateTime.now());
                 fillQuestionMapper.insert(currentFillQuestion);
@@ -472,7 +480,21 @@ public class ImportController {
                 } else if ("错误".equals(answer)) {
                     currentJudgeQuestion.setAnswer("incorrect");
                 }
-
+                Integer flag=i+1;
+                String line1=lines[flag];
+                if (line1.startsWith("图片：")) {
+                    if (pictures.hasNext()) {
+                        XWPFPictureData picture = pictures.next();
+                        try {
+                            // 图片处理逻辑
+                            currentJudgeQuestion.setPicFile(processImage(picture));
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        System.err.println("没有足够的图片用于处理: " + line);
+                    }
+                }
                 currentJudgeQuestion.setUserId(userId);
                 currentJudgeQuestion.setUpTime(LocalDateTime.now());
                 judgeQuestionMapper.insert(currentJudgeQuestion);
@@ -498,15 +520,38 @@ public class ImportController {
 
                 i++;
                 currentSelectQuestion.setAnswer(lines[i].split("：")[1]);
-
+                Integer flag=i+1;
+                String line1=lines[flag];
+                if (line1.startsWith("图片：")) {
+                    if (pictures.hasNext()) {
+                        XWPFPictureData picture = pictures.next();
+                        try {
+                            // 图片处理逻辑
+                            currentSelectQuestion.setPicFile(processImage(picture));
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        System.err.println("没有足够的图片用于处理: " + line);
+                    }
+                }
                 currentSelectQuestion.setUserId(userId);
                 currentSelectQuestion.setUpTime(LocalDateTime.now());
                 selectQuestionMapper.insert(currentSelectQuestion);
             }
-
         }
     }
+    private String processImage(XWPFPictureData picture) throws IOException {
 
+        byte[] bytes = picture.getData();
+
+        String randomFileName = UUID.randomUUID().toString() + ".jpg";
+
+        Path destinationPath = Paths.get(uploadPath, randomFileName);
+
+        Files.write(destinationPath, bytes);
+        return randomFileName;
+    }
 
 
 
