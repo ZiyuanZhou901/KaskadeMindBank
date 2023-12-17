@@ -120,30 +120,58 @@
                     <div class="carousel-inner">
                         <div th:each="question, iterationInfo : ${selectQuestions}" class="carousel-item"
                             th:classappend="${iterationInfo.index == 0} ? 'active' : ''">
-
-                            <div class="page-header min-vh-75 m-3 border-radius-xl"
-                                style="background-image: url('https://img.freepik.com/premium-vector/question-mark-with-drawn-white-strokes-dark-background-vector-illustration-handwritten-question-mark-answer-search-concept_175838-3327.jpg');">
-
-                                <div class="container">
-                                    <div class="row">
-                                        <div class="col-lg-6 my-auto">
-                                            <h4 class="text-white mb-0 fadeIn1 fadeInBottom">1/4</h4>
-                                            <h1 class="text-white fadeIn2 fadeInBottom" th:text="${question.subject}">
-                                            </h1>
-                                            <p class="lead text-white opacity-8 fadeIn3 fadeInBottom"
-                                                th:text="${question.description}"></p>
-                                            <p class="lead text-white opacity-8 fadeIn3 fadeInBottom"
-                                                th:text="A-+${question.answerA}"></p>
-                                            <p class="lead text-white opacity-8 fadeIn3 fadeInBottom"
-                                                th:text="B-+${question.answerB}"></p>
-                                            <p class="lead text-white opacity-8 fadeIn3 fadeInBottom"
-                                                th:text="C-+${question.answerC}"></p>
-                                            <p class="lead text-white opacity-8 fadeIn3 fadeInBottom"
-                                                th:text="D-+${question.answerD}"></p>
+                            <th:block th:unless="${question.picFile == null}">
+                                <div class="page-header min-vh-75 m-3 border-radius-xl"
+                                    th:style="'background-image: url(\'' + @{/} + 'upload/' + ${question.picFile} + '\'); background-size: contain; background-repeat: no-repeat; background-position: center; background-color: black;'">
+                                    <div class="container">
+                                        <div class="row">
+                                            <div class="col-lg-6 my-auto">
+                                                <h4 class="text-white mb-0 fadeIn1 fadeInBottom">1/4</h4>
+                                                <h1 class="text-white fadeIn2 fadeInBottom"
+                                                    th:text="${question.subject}">
+                                                </h1>
+                                                <p class="lead text-white opacity-8 fadeIn3 fadeInBottom"
+                                                    th:text="${question.description}"></p>
+                                                <p class="lead text-white opacity-8 fadeIn3 fadeInBottom"
+                                                    th:text="A-+${question.answerA}"></p>
+                                                <p class="lead text-white opacity-8 fadeIn3 fadeInBottom"
+                                                    th:text="B-+${question.answerB}"></p>
+                                                <p class="lead text-white opacity-8 fadeIn3 fadeInBottom"
+                                                    th:text="C-+${question.answerC}"></p>
+                                                <p class="lead text-white opacity-8 fadeIn3 fadeInBottom"
+                                                    th:text="D-+${question.answerD}"></p>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+
+                            </th:block>
+                            <th:block th:if="${question.picFile == null}">
+                                <div class="page-header min-vh-75 m-3 border-radius-xl"
+                                    style="background-image: url('https://img.freepik.com/premium-vector/question-mark-with-drawn-white-strokes-dark-background-vector-illustration-handwritten-question-mark-answer-search-concept_175838-3327.jpg');">
+
+                                    <div class="container">
+                                        <div class="row">
+                                            <div class="col-lg-6 my-auto">
+                                                <h4 class="text-white mb-0 fadeIn1 fadeInBottom">1/4</h4>
+                                                <h1 class="text-white fadeIn2 fadeInBottom"
+                                                    th:text="${question.subject}">
+                                                </h1>
+                                                <p class="lead text-white opacity-8 fadeIn3 fadeInBottom"
+                                                    th:text="${question.description}"></p>
+                                                <p class="lead text-white opacity-8 fadeIn3 fadeInBottom"
+                                                    th:text="A-+${question.answerA}"></p>
+                                                <p class="lead text-white opacity-8 fadeIn3 fadeInBottom"
+                                                    th:text="B-+${question.answerB}"></p>
+                                                <p class="lead text-white opacity-8 fadeIn3 fadeInBottom"
+                                                    th:text="C-+${question.answerC}"></p>
+                                                <p class="lead text-white opacity-8 fadeIn3 fadeInBottom"
+                                                    th:text="D-+${question.answerD}"></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </th:block>
                             <div class="container-fluid px-3">
                                 <div class="row">
                                     <div class="col-lg-2"></div>

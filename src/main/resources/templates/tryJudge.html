@@ -121,21 +121,42 @@
                         <div th:each="question, iterationInfo : ${judgeQuestions}" class="carousel-item"
                             th:classappend="${iterationInfo.index == 0} ? 'active' : ''">
 
-                            <div class="page-header min-vh-75 m-3 border-radius-xl"
-                                style="background-image: url('https://images.unsplash.com/photo-1624811072711-3e3481f355fd?q=80&w=3041&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');">
-
-                                <div class="container">
-                                    <div class="row">
-                                        <div class="col-lg-6 my-auto">
-                                            <h4 class="text-white mb-0 fadeIn1 fadeInBottom">Is it correct?</h4>
-                                            <h1 class="text-white fadeIn2 fadeInBottom" th:text="${question.subject}">
-                                            </h1>
-                                            <p class="lead text-white opacity-8 fadeIn3 fadeInBottom"
-                                                th:text="${question.description}"></p>
+                            <th:block th:unless="${question.picFile == null}">
+                                <div class="page-header min-vh-75 m-3 border-radius-xl"
+                                    th:style="'background-image: url(\'' + @{/} + 'upload/' + ${question.picFile} + '\'); background-size: contain; background-repeat: no-repeat; background-position: center; background-color: black;'">
+                                    <div class="container">
+                                        <div class="row">
+                                            <div class="col-lg-6 my-auto">
+                                                <h4 class="text-white mb-0 fadeIn1 fadeInBottom">Is it correct?</h4>
+                                                <h1 class="text-white fadeIn2 fadeInBottom"
+                                                    th:text="${question.subject}"></h1>
+                                                <p class="lead text-white opacity-8 fadeIn3 fadeInBottom"
+                                                    th:text="${question.description}"></p>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+
+
+                            </th:block>
+                            <th:block th:if="${question.picFile == null}">
+                                <div class="page-header min-vh-75 m-3 border-radius-xl"
+                                    style="background-image: url('https://images.unsplash.com/photo-1624811072711-3e3481f355fd?q=80&w=3041&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');">
+
+                                    <div class="container">
+                                        <div class="row">
+                                            <div class="col-lg-6 my-auto">
+                                                <h4 class="text-white mb-0 fadeIn1 fadeInBottom">Is it correct?</h4>
+                                                <h1 class="text-white fadeIn2 fadeInBottom"
+                                                    th:text="${question.subject}">
+                                                </h1>
+                                                <p class="lead text-white opacity-8 fadeIn3 fadeInBottom"
+                                                    th:text="${question.description}"></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </th:block>
                             <div class="container-fluid px-3">
                                 <div class="row">
                                     <div class="col-lg-2"></div>
