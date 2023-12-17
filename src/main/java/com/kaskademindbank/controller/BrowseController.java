@@ -45,7 +45,7 @@ import java.util.List;
  */
 @Controller
 public class BrowseController {
- 
+
     @Autowired
     FillQuestionMapper fillQuestionMapper;
     @Autowired
@@ -116,6 +116,8 @@ public class BrowseController {
             model.addAttribute("type", "fill");
             session.setAttribute("type", "fill");
             model.addAttribute("question", fillQuestion);
+            String picD="/upload/"+fillQuestion.getPicFile();
+            model.addAttribute("picD",picD);
         } else if ("judge".equals(questionType)) {
             JudgeQuestion judgeQuestion = judgeQuestionMapper.selectById(questionId);
             model.addAttribute("type", "judge");
