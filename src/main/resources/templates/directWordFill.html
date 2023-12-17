@@ -252,7 +252,9 @@
                                                     <div class="description ps-5">
                                                         <h5 th:text="${#numbers.sequence(1, 999)[iterationInfo.index]}">
                                                         </h5>
-                                                        <pre class="font-weight-bolder" th:text="${block}"></pre>
+                                                        <pre class="font-weight-bolder"
+                                                            th:id="'blockId_' + ${iterationInfo.index}"
+                                                            th:text="${block}"></pre>
                                                     </div>
 
                                                 </div>
@@ -449,6 +451,31 @@
         function openSelect() {
             window.location.href = "/import/directWord/selectQuestion";
         }
+    </script>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        /* 获取每个block元素的文本内容并加粗关键词 */
+        var numBlocks = /*[[${contentBlocks.size()}]]*/ 0; // 从后端获取blocks数量
+        var keywordsToBold = ['题型', '主题', '答案', '选项', '学科', '描述', '请', '尝试', '问题', '要求', '说明', '讨论', '结论', '分析', '原因', '解释', '关系', '条件', '方法', '过程', '结果', '比较', '区别', '相同', '影响', '判断', '理由', '推断']
+
+
+        for (var i = 0; i < numBlocks; i++) {
+            var blockElement = document.getElementById('blockId_' + i);
+
+            /* 获取block元素的文本内容 */
+            var blockText = blockElement.textContent || blockElement.innerText;
+
+            /* 使用正则表达式替换关键词为加粗的HTML代码 */
+            for (var j = 0; j < keywordsToBold.length; j++) {
+                var keywordToBold = keywordsToBold[j];
+                var boldBlockText = blockText.replace(new RegExp(keywordToBold, 'g'), '<span class="h5">' + keywordToBold + '</span>');
+                blockText = boldBlockText;  // 更新blockText为上一次替换后的文本
+            }
+
+            /* 将处理后的文本设置回block元素 */
+            blockElement.innerHTML = blockText;
+        }
+        /*]]>*/
     </script>
 </body>
 

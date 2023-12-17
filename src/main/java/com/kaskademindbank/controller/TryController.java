@@ -41,7 +41,7 @@ public class TryController {
         Users user = (Users) session.getAttribute("user");
         List<FillQuestion> fillQuestions = fillQuestionMapper.findFillQuestionsByUserIdWoFile(usersMapper.findUserIdByUsername(user.getUserName()));
         fillQuestions.sort(new Comparator<FillQuestion>() {
-            @Override
+            @Override 
             public int compare(FillQuestion o1, FillQuestion o2) {
                 return (int) (Math.random() * 10) - 5;
             }
@@ -51,7 +51,7 @@ public class TryController {
         session.setAttribute("user", user);
         model.addAttribute("fillQuestions", fillQuestions);
         return "tryFill";
-    }   
+    }
     @GetMapping("/tryitJudge")
     public String tryJudgePage(Model model, HttpSession session) {
         Users user = (Users) session.getAttribute("user");
