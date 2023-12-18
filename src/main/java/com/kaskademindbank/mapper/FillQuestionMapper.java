@@ -22,13 +22,12 @@ public interface FillQuestionMapper extends BaseMapper<FillQuestion> {
     @Select("SELECT DISTINCT subject FROM fillQuestion WHERE userId = #{userId}")
     List<String> findSubjectsByUserId(@Param("userId") Integer userId);
     @Select("SELECT * FROM fillQuestion WHERE userId = #{userId}")
-    List<FillQuestion> findFillQuestionsByUserId(Integer userIdByUsername);
+    List<FillQuestion> findFillQuestionsByUserId(Integer userId);
 
     @Select("SELECT * FROM fillQuestion WHERE userId = #{userId} and voiFile is null and vidFile is null")
-    List<FillQuestion> findFillQuestionsByUserIdWoFile(Integer userIdByUsername);
+    List<FillQuestion> findFillQuestionsByUserIdWoFile(Integer userId);
     @Select("SELECT COUNT(*) FROM fillQuestion WHERE userId = #{userId}")
-    Integer countByUserId(Integer userIdByUsername);
-
+    Integer countByUserId(Integer userId);
     @Select("SELECT * FROM fillQuestion WHERE userId = #{userId} and voiFile is null and vidFile is null and subject=#{subject}")
     List<FillQuestion> findFillQuestionsByUserIdWoFileSubject(Integer userId,String subject);
 }

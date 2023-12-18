@@ -132,16 +132,34 @@ public class FillQuestionServiceImpl extends ServiceImpl<FillQuestionMapper, Fil
             if (!imageFile.isEmpty()) {
                 String imageFileName = "image_" + UUID.randomUUID() + ".jpg";
                 handleFileUpload(imageFile, imageFileName);
+                if (existingQuestion.getPicFile()!=null){
+                    File file = new File(uploadPath+existingQuestion.getPicFile());
+                    if (file.exists()){
+                        file.delete();
+                    }
+                }
                 existingQuestion.setPicFile(imageFileName);
             }
             if (!audioFile.isEmpty()) {
                 String audioFileName = "audio_" + UUID.randomUUID() + ".mp3";
                 handleFileUpload(audioFile, audioFileName);
+                if (existingQuestion.getVoiFile()!=null){
+                    File file = new File(uploadPath+existingQuestion.getVoiFile());
+                    if (file.exists()){
+                        file.delete();
+                    }
+                }
                 existingQuestion.setVoiFile(audioFileName);
             }
             if (!videoFile.isEmpty()) {
                 String videoFileName = "video_" + UUID.randomUUID() + ".mp4";
                 handleFileUpload(videoFile, videoFileName);
+                if (existingQuestion.getVidFile()!=null){
+                    File file = new File(uploadPath+existingQuestion.getVidFile());
+                    if (file.exists()){
+                        file.delete();
+                    }
+                }
                 existingQuestion.setVidFile(videoFileName);
             }
         } catch (MaxUploadSizeExceededException e) {

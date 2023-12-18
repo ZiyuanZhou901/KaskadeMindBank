@@ -30,10 +30,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -187,14 +184,38 @@ public class BrowseController {
         Integer questionId = (Integer) session.getAttribute("questionId");
         session.setAttribute("questionId", questionId);
         if ("fill".equals(type)) {
+            FillQuestion question = fillQuestionMapper.selectById(questionId);
+            deleteFileIfExists(question.getPicFile());
+            deleteFileIfExists(question.getVoiFile());
+            deleteFileIfExists(question.getVidFile());
             fillQuestionMapper.deleteById(questionId);
         } else if ("judge".equals(type)) {
+            JudgeQuestion question = judgeQuestionMapper.selectById(questionId);
+            deleteFileIfExists(question.getPicFile());
+            deleteFileIfExists(question.getVoiFile());
+            deleteFileIfExists(question.getVidFile());
             judgeQuestionMapper.deleteById(questionId);
         } else if ("select".equals(type)) {
+            SelectQuestion question = selectQuestionMapper.selectById(questionId);
+            deleteFileIfExists(question.getPicFile());
+            deleteFileIfExists(question.getVoiFile());
+            deleteFileIfExists(question.getVidFile());
             selectQuestionMapper.deleteById(questionId);
         }
         session.setAttribute("successDeleteMessage", "Successfully deleting question");
         return "redirect:/browse";
+    }
+    private void deleteFileIfExists(String filePath) {
+        if (filePath != null && !filePath.isEmpty()) {
+            File file = new File(uploadPath+filePath);
+            if (file.exists()) {
+                if (file.delete()) {
+                    System.out.println("File deleted: " + filePath);
+                } else {
+                    System.err.println("Failed to delete file: " + filePath);
+                }
+            }
+        }
     }
     @PostMapping("/edit/fillQuestion")
     public String editFillQuestion(FillQuestion fillQuestion,

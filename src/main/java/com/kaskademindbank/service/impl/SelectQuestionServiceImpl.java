@@ -115,16 +115,34 @@ public class SelectQuestionServiceImpl extends ServiceImpl<SelectQuestionMapper,
             if (!imageFile.isEmpty()) {
                 String imageFileName = "image_" + UUID.randomUUID() + ".jpg";
                 handleFileUpload(imageFile, imageFileName);
+                if (existingQuestion.getPicFile() != null) {
+                    File file = new File(Paths.get(uploadPath, existingQuestion.getPicFile()).toString());
+                    if (file.exists()) {
+                        file.delete();
+                    }
+                }
                 existingQuestion.setPicFile(imageFileName);
             }
             if (!audioFile.isEmpty()) {
                 String audioFileName = "audio_" + UUID.randomUUID() + ".mp3";
                 handleFileUpload(audioFile, audioFileName);
+                if (existingQuestion.getVoiFile() != null) {
+                    File file = new File(Paths.get(uploadPath, existingQuestion.getVoiFile()).toString());
+                    if (file.exists()) {
+                        file.delete();
+                    }
+                }
                 existingQuestion.setVoiFile(audioFileName);
             }
             if (!videoFile.isEmpty()) {
                 String videoFileName = "video_" + UUID.randomUUID() + ".mp4";
                 handleFileUpload(videoFile, videoFileName);
+                if(existingQuestion.getVidFile()!=null){
+                    File file = new File(Paths.get(uploadPath, existingQuestion.getVidFile()).toString());
+                    if (file.exists()) {
+                        file.delete();
+                    }
+                }
                 existingQuestion.setVidFile(videoFileName);
             }
         } catch (MaxUploadSizeExceededException e) {
