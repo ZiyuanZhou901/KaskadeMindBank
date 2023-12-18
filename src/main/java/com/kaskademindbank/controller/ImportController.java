@@ -144,7 +144,12 @@ public class ImportController {
 
     @GetMapping("/import/directWord/fillQuestion")
     public String showDirectWordFillQuestionPage(Model model, HttpSession session) {
-        model.addAttribute("user", session.getAttribute("user"));
+        Users user = (Users) session.getAttribute("user");
+        model.addAttribute("user", user);
+        if (user != null) {
+            List<String> uploadedSubjects = selectQuestionService.getUploadedSubjectsByUserId(usersMapper.findUserIdByUsername(user.getUserName()));
+            model.addAttribute("uploadedSubjects", uploadedSubjects);
+        }
         model.addAttribute("contentBlocks", session.getAttribute("contentBlocks"));
         model.addAttribute("fillQuestion", new FillQuestion());
         return "directWordFill";
@@ -157,7 +162,12 @@ public class ImportController {
     }
     @GetMapping("/import/directWord/judgeQuestion")
     public String showDirectWordJudgeQuestionPage(Model model, HttpSession session) {
-        model.addAttribute("user", session.getAttribute("user"));
+        Users user = (Users) session.getAttribute("user");
+        model.addAttribute("user", user);
+        if (user != null) {
+            List<String> uploadedSubjects = selectQuestionService.getUploadedSubjectsByUserId(usersMapper.findUserIdByUsername(user.getUserName()));
+            model.addAttribute("uploadedSubjects", uploadedSubjects);
+        }
         model.addAttribute("contentBlocks", session.getAttribute("contentBlocks"));
         model.addAttribute("judgeQuestion", new JudgeQuestion());
         return "directWordJudge";
@@ -172,7 +182,12 @@ public class ImportController {
 
     @GetMapping("/import/directWord/selectQuestion")
     public String showDirectWordSelectQuestionPage(Model model, HttpSession session) {
-        model.addAttribute("user", session.getAttribute("user"));
+        Users user = (Users) session.getAttribute("user");
+        model.addAttribute("user", user);
+        if (user != null) {
+            List<String> uploadedSubjects = selectQuestionService.getUploadedSubjectsByUserId(usersMapper.findUserIdByUsername(user.getUserName()));
+            model.addAttribute("uploadedSubjects", uploadedSubjects);
+        }
         model.addAttribute("contentBlocks", session.getAttribute("contentBlocks"));
         model.addAttribute("selectQuestion", new SelectQuestion());
         return "directWordSelect";
@@ -291,6 +306,7 @@ public class ImportController {
         }
 
         while (rowIterator.hasNext()) {
+            FillQuestion fillQuestion = new FillQuestion();
             Row row = rowIterator.next();
 
             // 假设列按顺序为：主题、描述、答案
@@ -298,8 +314,6 @@ public class ImportController {
             String description = getCellValueAsString(row.getCell(1));
             String answer = getCellValueAsString(row.getCell(2));
 
-            // 创建FillQuestion对象并保存到数据库
-            FillQuestion fillQuestion = new FillQuestion();
             fillQuestion.setSubject(subject);
             fillQuestion.setDescription(description);
             fillQuestion.setAnswer(answer);
@@ -308,6 +322,7 @@ public class ImportController {
             fillQuestionMapper.insert(fillQuestion);
         }
     }
+
 
     private void processJudgeSheet(Sheet sheet, Integer userId) {
         // 假设第一行包含列标题
