@@ -28,4 +28,7 @@ public interface FillQuestionMapper extends BaseMapper<FillQuestion> {
     List<FillQuestion> findFillQuestionsByUserIdWoFile(Integer userIdByUsername);
     @Select("SELECT COUNT(*) FROM fillQuestion WHERE userId = #{userId}")
     Integer countByUserId(Integer userIdByUsername);
+
+    @Select("SELECT * FROM fillQuestion WHERE userId = #{userId} and voiFile is null and vidFile is null and subject=#{subject}")
+    List<FillQuestion> findFillQuestionsByUserIdWoFileSubject(Integer userId,String subject);
 }

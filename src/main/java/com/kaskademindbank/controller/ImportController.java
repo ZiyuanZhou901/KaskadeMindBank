@@ -147,7 +147,7 @@ public class ImportController {
         Users user = (Users) session.getAttribute("user");
         model.addAttribute("user", user);
         if (user != null) {
-            List<String> uploadedSubjects = selectQuestionService.getUploadedSubjectsByUserId(usersMapper.findUserIdByUsername(user.getUserName()));
+            List<String> uploadedSubjects = fillQuestionService.getUploadedSubjectsByUserId(usersMapper.findUserIdByUsername(user.getUserName()));
             model.addAttribute("uploadedSubjects", uploadedSubjects);
         }
         model.addAttribute("contentBlocks", session.getAttribute("contentBlocks"));
@@ -165,7 +165,7 @@ public class ImportController {
         Users user = (Users) session.getAttribute("user");
         model.addAttribute("user", user);
         if (user != null) {
-            List<String> uploadedSubjects = selectQuestionService.getUploadedSubjectsByUserId(usersMapper.findUserIdByUsername(user.getUserName()));
+            List<String> uploadedSubjects = judgeQuestionService.getUploadedSubjectsByUserId(usersMapper.findUserIdByUsername(user.getUserName()));
             model.addAttribute("uploadedSubjects", uploadedSubjects);
         }
         model.addAttribute("contentBlocks", session.getAttribute("contentBlocks"));
