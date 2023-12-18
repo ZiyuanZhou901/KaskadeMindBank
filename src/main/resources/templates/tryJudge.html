@@ -116,6 +116,19 @@
             <a class="btn bg-gradient-dark mb-2 m-3 ms-15" th:href="@{/tryit}"><i></i>&nbsp;&nbsp;Fill</a>
             <a class="btn bg-gradient-dark mb-2 m-3" th:href="@{/tryitJudge}"><i></i>&nbsp;&nbsp;Judge</a>
             <a class="btn bg-gradient-dark mb-2 m-3" th:href="@{/tryitSelect}"><i></i>&nbsp;&nbsp;Select</a>
+            <a href="#" class="btn bg-gradient-dark dropdown-toggle mb-2 m-3 ms-15 " data-bs-toggle="dropdown"
+                id="navbarDropdownMenuLink2">
+                <!--                 <img src="https://demos.creative-tim.com/argon-dashboard-pro-bs4/assets/img/icons/flags/US.png" /> -->
+                Subjects
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink2">
+                <div th:each="selectSubject : ${uploadedSubjects}">
+                    <li>
+                        <a class="dropdown-item" th:href="'/tryitJudge?subject='+${selectSubject}"
+                            th:text="${selectSubject}"></a>
+                    </li>
+                </div>
+            </ul>
             <div class="row mt-4">
                 <div id="carouselExampleControls" class="carousel slide">
                     <div class="carousel-inner">

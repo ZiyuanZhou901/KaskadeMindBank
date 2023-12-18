@@ -75,16 +75,25 @@ public class TryController {
         return "tryFill";
     }
     @GetMapping("/tryitJudge")
-    public String tryJudgePage(Model model, HttpSession session) {
+    public String tryJudgePage(Model model, HttpSession session, @RequestParam(defaultValue = "all") String subject) {
         Users user = (Users) session.getAttribute("user");
-        List<JudgeQuestion> judgeQuestions = judgeQuestionMapper.findJudgeQuestionsByUserIdWoFile(usersMapper.findUserIdByUsername(user.getUserName()));
+        List<JudgeQuestion> judgeQuestions=new ArrayList<>();
+        if (subject.equals("all")){
+            judgeQuestions = judgeQuestionMapper.findJudgeQuestionsByUserIdWoFile(usersMapper.findUserIdByUsername(user.getUserName()));
+        }
+        else {
+            judgeQuestions=judgeQuestionMapper.findJudgeQuestionsByUserIdWoFileSubject(usersMapper.findUserIdByUsername(user.getUserName()),subject);
+        }
         judgeQuestions.sort(new Comparator<JudgeQuestion>() {
             @Override
             public int compare(JudgeQuestion o1, JudgeQuestion o2) {
                 return (int) (Math.random() * 10) - 5;
             }
         });
-
+        if (user != null) {
+            List<String> uploadedSubjects = judgeQuestionService.getUploadedSubjectsByUserId(usersMapper.findUserIdByUsername(user.getUserName()));
+            model.addAttribute("uploadedSubjects", uploadedSubjects);
+        }
         model.addAttribute("user", user);
         session.setAttribute("user", user);
         model.addAttribute("judgeQuestions", judgeQuestions);
@@ -92,16 +101,25 @@ public class TryController {
     }
 
     @GetMapping("/tryitSelect")
-    public String trySelectPage(Model model, HttpSession session) {
+    public String trySelectPage(Model model, HttpSession session, @RequestParam(defaultValue = "all") String subject) {
         Users user = (Users) session.getAttribute("user");
-        List<SelectQuestion> selectQuestions = selectQuestionMapper.findSelectQuestionsByUserIdWoFile(usersMapper.findUserIdByUsername(user.getUserName()));
+        List<SelectQuestion> selectQuestions=new ArrayList<>();
+        if (subject.equals("all")){
+            selectQuestions = selectQuestionMapper.findSelectQuestionsByUserIdWoFile(usersMapper.findUserIdByUsername(user.getUserName()));
+        }
+        else {
+            selectQuestions=selectQuestionMapper.findSelectQuestionsByUserIdWoFileSubject(usersMapper.findUserIdByUsername(user.getUserName()),subject);
+        }
         selectQuestions.sort(new Comparator<SelectQuestion>() {
             @Override
             public int compare(SelectQuestion o1, SelectQuestion o2) {
                 return (int) (Math.random() * 10) - 5;
             }
         });
-
+        if (user != null) {
+            List<String> uploadedSubjects = selectQuestionService.getUploadedSubjectsByUserId(usersMapper.findUserIdByUsername(user.getUserName()));
+            model.addAttribute("uploadedSubjects", uploadedSubjects);
+        }
         model.addAttribute("user", user);
         session.setAttribute("user", user);
         model.addAttribute("selectQuestions", selectQuestions);

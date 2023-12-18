@@ -21,11 +21,13 @@ public interface SelectQuestionMapper extends BaseMapper<SelectQuestion> {
     @Select("SELECT DISTINCT subject FROM selectQuestion WHERE userId = #{userId}")
     List<String> findSubjectsByUserId(@Param("userId") Integer userId);
     @Select("SELECT * FROM selectQuestion WHERE userId = #{userId}")
-    List<SelectQuestion> findSelectQuestionsByUserId(Integer userIdByUsername);
+    List<SelectQuestion> findSelectQuestionsByUserId(Integer userId);
 
     @Select("SELECT * FROM selectQuestion WHERE userId = #{userId} and voiFile is null and vidFile is null")
-    List<SelectQuestion> findSelectQuestionsByUserIdWoFile(Integer userIdByUsername);
+    List<SelectQuestion> findSelectQuestionsByUserIdWoFile(Integer userId);
 
     @Select("SELECT COUNT(*) FROM selectQuestion WHERE userId = #{userId}")
     Integer countByUserId(@Param("userId") Integer userId);
+    @Select("SELECT * FROM selectQuestion WHERE userId = #{userId} and voiFile is null and vidFile is null and subject=#{subject}")
+    List<SelectQuestion> findSelectQuestionsByUserIdWoFileSubject(Integer userId, String subject);
 }

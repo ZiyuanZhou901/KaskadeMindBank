@@ -21,9 +21,11 @@ public interface JudgeQuestionMapper extends BaseMapper<JudgeQuestion> {
     @Select("SELECT DISTINCT subject FROM judgeQuestion WHERE userId = #{userId}")
     List<String> findSubjectsByUserId(@Param("userId") Integer userId);
     @Select("SELECT * FROM judgeQuestion WHERE userId = #{userId}")
-    List<JudgeQuestion> findJudgeQuestionsByUserId(Integer userIdByUsername);
+    List<JudgeQuestion> findJudgeQuestionsByUserId(Integer userId);
     @Select("SELECT * FROM judgeQuestion WHERE userId = #{userId} and voiFile is null and vidFile is null")
-    List<JudgeQuestion> findJudgeQuestionsByUserIdWoFile(Integer userIdByUsername);
+    List<JudgeQuestion> findJudgeQuestionsByUserIdWoFile(Integer userId);
     @Select("SELECT COUNT(*) FROM judgeQuestion WHERE userId = #{userId}")
-    Integer countByUserId(Integer userIdByUsername);
+    Integer countByUserId(Integer userId);
+    @Select("SELECT * FROM judgeQuestion WHERE userId = #{userId} and voiFile is null and vidFile is null and subject=#{subject}")
+    List<JudgeQuestion> findJudgeQuestionsByUserIdWoFileSubject(Integer userId, String subject);
 }
