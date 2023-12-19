@@ -29,5 +29,5 @@ public interface IJudgeQuestionService extends IService<JudgeQuestion> {
 
     String editJudgeQuestion(JudgeQuestion judgeQuestion, Model model, HttpSession session, MultipartFile imageFile, MultipartFile audioFile, MultipartFile videoFile);
 
-    String directJudgeQuestion(JudgeQuestion judgeQuestion, Model model, HttpSession session);
+    String directJudgeQuestion(JudgeQuestion judgeQuestion, Model model, HttpSession session, MultipartFile imageFile, MultipartFile audioFile, MultipartFile videoFile);
 }

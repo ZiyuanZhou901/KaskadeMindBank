@@ -107,12 +107,38 @@ public class FillQuestionServiceImpl extends ServiceImpl<FillQuestionMapper, Fil
     }
 
     @Override
-    public String directFillQuestion(FillQuestion fillQuestion, Model model, HttpSession session) {
+    public String directFillQuestion(FillQuestion fillQuestion, Model model, HttpSession session,
+                                     @RequestParam("imageFile") MultipartFile imageFile,
+                                     @RequestParam("audioFile") MultipartFile audioFile,
+                                     @RequestParam("videoFile") MultipartFile videoFile) {
         Users user = (Users) session.getAttribute("user");
         if (user != null) {
             fillQuestion.setUserId(usersMapper.findUserIdByUsername(user.getUserName()));
         }
         fillQuestion.setUpTime(LocalDateTime.now());
+        try {
+            if (!imageFile.isEmpty()) {
+                String imageFileName = "image_" + UUID.randomUUID() + ".jpg";
+                handleFileUpload(imageFile, imageFileName);
+                fillQuestion.setPicFile(imageFileName);
+            }
+            if (!audioFile.isEmpty()) {
+                String audioFileName = "audio_" + UUID.randomUUID() + ".mp3";
+                handleFileUpload(audioFile, audioFileName);
+                fillQuestion.setVoiFile(audioFileName);
+            }
+            if (!videoFile.isEmpty()) {
+                String videoFileName = "video_" + UUID.randomUUID() + ".mp4";
+                handleFileUpload(videoFile, videoFileName);
+                fillQuestion.setVidFile(videoFileName);
+            }
+        } catch (MaxUploadSizeExceededException e) {
+            model.addAttribute("error", "文件大小超过限制");
+            return "template_import";
+        } catch (IOException e) {
+            model.addAttribute("error", "上传文件时发生错误");
+            return "template_import";
+        }
         fillQuestionMapper.insert(fillQuestion);
         session.setAttribute("contentBlocks",model.getAttribute("contentBlocks"));
         session.setAttribute("successMessage", "Successfully imported fill question");

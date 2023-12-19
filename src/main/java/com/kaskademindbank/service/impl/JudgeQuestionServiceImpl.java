@@ -154,12 +154,35 @@ public class JudgeQuestionServiceImpl extends ServiceImpl<JudgeQuestionMapper, J
     }
 
     @Override
-    public String directJudgeQuestion(JudgeQuestion judgeQuestion, Model model, HttpSession session) {
+    public String directJudgeQuestion(JudgeQuestion judgeQuestion, Model model, HttpSession session, MultipartFile imageFile, MultipartFile audioFile, MultipartFile videoFile) {
         Users user = (Users) session.getAttribute("user");
         if (user != null) {
             judgeQuestion.setUserId(usersMapper.findUserIdByUsername(user.getUserName()));
         }
         judgeQuestion.setUpTime(LocalDateTime.now());
+        try {
+            if (!imageFile.isEmpty()) {
+                String imageFileName = "image_" + UUID.randomUUID() + ".jpg";
+                handleFileUpload(imageFile, imageFileName);
+                judgeQuestion.setPicFile(imageFileName);
+            }
+            if (!audioFile.isEmpty()) {
+                String audioFileName = "audio_" + UUID.randomUUID() + ".mp3";
+                handleFileUpload(audioFile, audioFileName);
+                judgeQuestion.setVoiFile(audioFileName);
+            }
+            if (!videoFile.isEmpty()) {
+                String videoFileName = "video_" + UUID.randomUUID() + ".mp4";
+                handleFileUpload(videoFile, videoFileName);
+                judgeQuestion.setVidFile(videoFileName);
+            }
+        } catch (MaxUploadSizeExceededException e) {
+            model.addAttribute("error", "文件大小超过限制");
+            return "template_import";
+        } catch (IOException e) {
+            model.addAttribute("error", "上传文件时发生错误");
+            return "template_import";
+        }
         judgeQuestionMapper.insert(judgeQuestion);
         session.setAttribute("contentBlocks",model.getAttribute("contentBlocks"));
         session.setAttribute("successMessage", "Successfully imported judge question");

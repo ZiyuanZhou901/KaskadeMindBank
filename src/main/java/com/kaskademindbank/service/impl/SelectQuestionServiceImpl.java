@@ -157,13 +157,36 @@ public class SelectQuestionServiceImpl extends ServiceImpl<SelectQuestionMapper,
     }
 
     @Override
-    public String directSelectQuestion(SelectQuestion selectQuestion, Model model, HttpSession session) {
+    public String directSelectQuestion(SelectQuestion selectQuestion, Model model, HttpSession session, MultipartFile imageFile, MultipartFile audioFile, MultipartFile videoFile) {
 
         Users user = (Users) session.getAttribute("user");
         if (user != null) {
             selectQuestion.setUserId(usersMapper.findUserIdByUsername(user.getUserName()));
         }
         selectQuestion.setUpTime(LocalDateTime.now());
+        try {
+            if (!imageFile.isEmpty()) {
+                String imageFileName = "image_" + UUID.randomUUID() + ".jpg";
+                handleFileUpload(imageFile, imageFileName);
+                selectQuestion.setPicFile(imageFileName);
+            }
+            if (!audioFile.isEmpty()) {
+                String audioFileName = "audio_" + UUID.randomUUID() + ".mp3";
+                handleFileUpload(audioFile, audioFileName);
+                selectQuestion.setVoiFile(audioFileName);
+            }
+            if (!videoFile.isEmpty()) {    
+                String videoFileName = "video_" + UUID.randomUUID() + ".mp4";
+                handleFileUpload(videoFile, videoFileName);
+                selectQuestion.setVidFile(videoFileName);
+            }
+        } catch (MaxUploadSizeExceededException e) {
+            model.addAttribute("error", "文件大小超过限制");
+            return "template_import";
+        } catch (IOException e) {
+            model.addAttribute("error", "上传文件时发生错误");
+            return "template_import";
+        }
         selectQuestionMapper.insert(selectQuestion);
         session.setAttribute("contentBlocks",model.getAttribute("contentBlocks"));
         session.setAttribute("successMessage", "Successfully imported select question");

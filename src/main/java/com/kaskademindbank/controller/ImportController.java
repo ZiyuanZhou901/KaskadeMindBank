@@ -155,10 +155,12 @@ public class ImportController {
         return "directWordFill";
     }
     @PostMapping("/import/directWord/fillQuestion")
-    public String handleFormSubmission(@ModelAttribute FillQuestion fillQuestion, Model model,HttpSession session) {
+    public String handleFormSubmission(@ModelAttribute FillQuestion fillQuestion,@RequestParam("imageFile") MultipartFile imageFile,
+                                       @RequestParam("audioFile") MultipartFile audioFile,
+                                       @RequestParam("videoFile") MultipartFile videoFile, Model model,HttpSession session) {
         model.addAttribute("user", session.getAttribute("user"));
         model.addAttribute("contentBlocks", session.getAttribute("contentBlocks"));
-        return fillQuestionService.directFillQuestion(fillQuestion,model,session);
+        return fillQuestionService.directFillQuestion(fillQuestion,model,session,imageFile,audioFile,videoFile);
     }
     @GetMapping("/import/directWord/judgeQuestion")
     public String showDirectWordJudgeQuestionPage(Model model, HttpSession session) {
@@ -174,10 +176,12 @@ public class ImportController {
     }
 
     @PostMapping("/import/directWord/judgeQuestion")
-    public String handleJudgeQuestionFormSubmission(@ModelAttribute JudgeQuestion judgeQuestion, Model model, HttpSession session) {
+    public String handleJudgeQuestionFormSubmission(@ModelAttribute JudgeQuestion judgeQuestion, @RequestParam("imageFile") MultipartFile imageFile,
+                                                    @RequestParam("audioFile") MultipartFile audioFile,
+                                                    @RequestParam("videoFile") MultipartFile videoFile, Model model, HttpSession session) {
         model.addAttribute("user", session.getAttribute("user"));
         model.addAttribute("contentBlocks", session.getAttribute("contentBlocks"));
-        return judgeQuestionService.directJudgeQuestion(judgeQuestion, model, session);
+        return judgeQuestionService.directJudgeQuestion(judgeQuestion, model, session,imageFile,audioFile,videoFile);
     }
 
     @GetMapping("/import/directWord/selectQuestion")
@@ -194,10 +198,12 @@ public class ImportController {
     }
 
     @PostMapping("/import/directWord/selectQuestion")
-    public String handleSelectQuestionFormSubmission(@ModelAttribute SelectQuestion selectQuestion, Model model, HttpSession session) {
+    public String handleSelectQuestionFormSubmission(@ModelAttribute SelectQuestion selectQuestion,  @RequestParam("imageFile") MultipartFile imageFile,
+                                                     @RequestParam("audioFile") MultipartFile audioFile,
+                                                     @RequestParam("videoFile") MultipartFile videoFile, Model model, HttpSession session) {
         model.addAttribute("user", session.getAttribute("user"));
         model.addAttribute("contentBlocks", session.getAttribute("contentBlocks"));
-        return selectQuestionService.directSelectQuestion(selectQuestion, model, session);
+        return selectQuestionService.directSelectQuestion(selectQuestion, model, session,imageFile,audioFile,videoFile);
     }
 
     @GetMapping("/import/directWord")
