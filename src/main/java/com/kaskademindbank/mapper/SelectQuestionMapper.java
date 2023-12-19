@@ -37,4 +37,15 @@ public interface SelectQuestionMapper extends BaseMapper<SelectQuestion> {
             "AND upTime >= CURDATE() - INTERVAL 6 DAY " +
             "GROUP BY DATE(upTime)")
     List<Map<String, Integer>> countByUserIdAndDate(Integer userId);
+
+    @Select({
+            "SELECT subject, SUM(questionCount) AS totalQuestionCount FROM (",
+            "  SELECT subject, COUNT(*) AS questionCount FROM fillQuestion WHERE userId = #{userId} GROUP BY subject",
+            "  UNION ALL",
+            "  SELECT subject, COUNT(*) AS questionCount FROM judgeQuestion WHERE userId = #{userId} GROUP BY subject",
+            "  UNION ALL",
+            "  SELECT subject, COUNT(*) AS questionCount FROM selectQuestion WHERE userId = #{userId} GROUP BY subject",
+            ") AS subquery GROUP BY subject"
+    })
+    List<Map<String, Object>> countQuestionsBySubject(@Param("userId") Integer userId);
 }

@@ -141,7 +141,7 @@
                         </div>
                         <div class="card-body p-3">
                             <div class="chart">
-                                <canvas id="chart-line" class="chart-canvas" height="300"></canvas>
+                                <canvas id="grouped-bar-chart" class="chart-canvas" height="300"></canvas>
                             </div>
                         </div>
                     </div>
@@ -153,12 +153,12 @@
                         <h6 class="text-capitalize">Trending</h6>
                         <p class="text-sm mb-0">
                             <i class="fa fa-arrow-up text-success"></i>
-                            <span class="font-weight-bold">4% more</span> in 2021
+                            <span class="font-weight-bold">In the last 7 days...</span>
                         </p>
                     </div>
                     <div class="card-body p-3">
                         <div class="chart">
-                            <canvas id="chart-line" class="chart-canvas" height="300"></canvas>
+                            <canvas id="line-chart" class="chart-canvas" height="300"></canvas>
                         </div>
                     </div>
                 </div>
@@ -213,6 +213,232 @@
             },
         });
     </script>
+    <script th:inline="javascript">
+        var ctx4 = document.getElementById("line-chart").getContext("2d");
+
+        // Assuming 'fillMap', 'judgeMap', and 'selectMap' are Lists of Maps containing data like {upTime: "2023-12-17", uploadCount: 11}
+        var fillMap = /*[[${fillMap}]]*/[];
+        var judgeMap = /*[[${judgeMap}]]*/[];
+        var selectMap = /*[[${selectMap}]]*/[];
+
+        // Process the data to fill in missing dates with zero values
+        var startDate = new Date();
+        startDate.setDate(startDate.getDate() - 6);  // Start from seven days ago
+        var endDate = new Date();
+        var dateLabels = [];
+        var fillCounts = [];
+        var judgeCounts = [];
+        var selectCounts = [];
+
+        for (var i = 0; i < 7; i++) {
+            var currentDate = new Date();
+            currentDate.setDate(startDate.getDate() + i);
+
+            var dateString = currentDate.toISOString().split('T')[0];
+
+            dateLabels.push(dateString);
+
+            var fillMatchingData = fillMap.find(item => item.upTime === dateString);
+            var judgeMatchingData = judgeMap.find(item => item.upTime === dateString);
+            var selectMatchingData = selectMap.find(item => item.upTime === dateString);
+
+            fillCounts.push(fillMatchingData ? fillMatchingData.uploadCount : 0);
+            judgeCounts.push(judgeMatchingData ? judgeMatchingData.uploadCount : 0);
+            selectCounts.push(selectMatchingData ? selectMatchingData.uploadCount : 0);
+        }
+
+        new Chart(ctx4, {
+            type: "line",
+            data: {
+                labels: dateLabels,
+                datasets: [{
+                    label: "Fill Count",
+                    tension: 0.4,
+                    borderWidth: 3,
+                    borderColor: "#5e72e4",
+                    backgroundColor: "rgba(94, 114, 228, 0.2)",
+                    fill: true,
+                    data: fillCounts,
+                    maxBarThickness: 6
+                }, {
+                    label: "Judge Count",
+                    tension: 0.4,
+                    borderWidth: 3,
+                    borderColor: "#11cdef",
+                    backgroundColor: "rgba(17, 205, 239, 0.2)",
+                    fill: true,
+                    data: judgeCounts,
+                    maxBarThickness: 6
+                }, {
+                    label: "Select Count",
+                    tension: 0.4,
+                    borderWidth: 3,
+                    borderColor: "#fd5d93",
+                    backgroundColor: "rgba(253, 93, 147, 0.2)",
+                    fill: true,
+                    data: selectCounts,
+                    maxBarThickness: 6
+                }],
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                    }
+                },
+                interaction: {
+                    intersect: false,
+                    mode: 'index',
+                },
+                scales: {
+                    y: {
+                        grid: {
+                            drawBorder: false,
+                            display: true,
+                            drawOnChartArea: true,
+                            drawTicks: false,
+                            borderDash: [5, 5]
+                        },
+                        ticks: {
+                            display: true,
+                            padding: 10,
+                            color: '#fbfbfb',
+                            font: {
+                                size: 11,
+                                family: "Open Sans",
+                                style: 'normal',
+                                lineHeight: 2
+                            },
+                        }
+                    },
+                    x: {
+                        grid: {
+                            drawBorder: false,
+                            display: false,
+                            drawOnChartArea: false,
+                            drawTicks: false,
+                            borderDash: [5, 5]
+                        },
+                        ticks: {
+                            display: true,
+                            color: '#ccc',
+                            padding: 20,
+                            font: {
+                                size: 11,
+                                family: "Open Sans",
+                                style: 'normal',
+                                lineHeight: 2
+                            },
+                        }
+                    },
+                },
+            },
+        });
+    </script>
+    <script th:inline="javascript">
+        var ctx5 = document.getElementById("grouped-bar-chart").getContext("2d");
+
+        // Assuming 'subjects' is a List<Map<String, Object>> with data like {subject: "wfew", totalQuestionCount: 11}
+        var subjects = /*[[${subjects}]]*/[];
+
+        // Sort subjects array in descending order based on totalQuestionCount
+        subjects.sort((a, b) => b.totalQuestionCount - a.totalQuestionCount);
+
+        // Extracting data for chart
+        var subjectLabels = subjects.map(item => item.subject);
+        var questionCounts = subjects.map(item => item.totalQuestionCount);
+
+        // Generate a gradient color scale based on totalQuestionCount
+        var gradientColors = generateGradientColors(questionCounts);
+
+        function generateGradientColors(data) {
+            var maxCount = Math.max(...data);
+            var minCount = Math.min(...data);
+
+            var gradientColors = data.map(count => {
+                var percentage = (count - minCount) / (maxCount - minCount);
+                return getColorByPercentage(percentage);
+            });
+
+            return gradientColors;
+        }
+
+        function getColorByPercentage(percentage) {
+            // Customize this function to generate a color based on the percentage
+            // This example uses a simple linear gradient from blue to red
+            var r = Math.round(255 - percentage * 255);
+            var g = Math.round(percentage * 255);
+            var b = 0;
+            return `rgba(${r}, ${g}, ${b}, 0.7)`;
+        }
+
+        new Chart(ctx5, {
+            type: "bar",
+            data: {
+                labels: subjectLabels,
+                datasets: [{
+                    label: "Total Question Count",
+                    backgroundColor: gradientColors,
+                    data: questionCounts,
+                }],
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false,
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            drawBorder: false,
+                            display: true,
+                            drawOnChartArea: true,
+                            drawTicks: false,
+                            borderDash: [5, 5]
+                        },
+                        ticks: {
+                            display: true,
+                            padding: 10,
+                            color: '#fbfbfb',
+                            font: {
+                                size: 11,
+                                family: "Open Sans",
+                                style: 'normal',
+                                lineHeight: 2
+                            },
+                        }
+                    },
+                    x: {
+                        grid: {
+                            drawBorder: false,
+                            display: true,
+                            drawOnChartArea: true,
+                            drawTicks: false,
+                            borderDash: [5, 5]
+                        },
+                        ticks: {
+                            display: true,
+                            color: '#ccc',
+                            padding: 20,
+                            font: {
+                                size: 11,
+                                family: "Open Sans",
+                                style: 'normal',
+                                lineHeight: 2
+                            },
+                        }
+                    },
+                },
+            },
+        });
+    </script>
+
 
     <script>
         var win = navigator.platform.indexOf('Win') > -1;
