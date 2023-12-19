@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -28,4 +29,10 @@ public interface JudgeQuestionMapper extends BaseMapper<JudgeQuestion> {
     Integer countByUserId(Integer userId);
     @Select("SELECT * FROM judgeQuestion WHERE userId = #{userId} and voiFile is null and vidFile is null and subject=#{subject}")
     List<JudgeQuestion> findJudgeQuestionsByUserIdWoFileSubject(Integer userId, String subject);
+    @Select("SELECT DATE(upTime) AS upTime, COUNT(*) AS uploadCount " +
+            "FROM judgeQuestion " +
+            "WHERE userId = #{userId} " +
+            "AND upTime >= CURDATE() - INTERVAL 6 DAY " +
+            "GROUP BY DATE(upTime)")
+    List<Map<String, Integer>> countByUserIdAndDate(Integer userId);
 }
