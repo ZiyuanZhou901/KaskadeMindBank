@@ -22,7 +22,6 @@ mybatis-plus:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
     map-underscore-to-camel-case: false
 
-
 file:
   path: /Users/23Fall/JAVA/upload/
 

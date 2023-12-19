@@ -38,7 +38,7 @@ public class ProfileController {
         //查找类别数量
         Integer fillCount = fillQuestionMapper.countByUserId(usersMapper.findUserIdByUsername(user.getUserName()));
         Integer judgeCount = judgeQuestionMapper.countByUserId(usersMapper.findUserIdByUsername(user.getUserName()));
-        Integer selectCount = selectQuestionMapper.countByUserId(usersMapper.findUserIdByUsername(user.getUserName()));           
+        Integer selectCount = selectQuestionMapper.countByUserId(usersMapper.findUserIdByUsername(user.getUserName()));
         Integer totalCount = fillCount + judgeCount + selectCount;
         model.addAttribute("fillCount", fillCount);
         model.addAttribute("judgeCount", judgeCount);
