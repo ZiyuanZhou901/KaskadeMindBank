@@ -33,12 +33,12 @@ public class ProfileController {
         List<Map<String, Integer>> judgeMap = judgeQuestionMapper.countByUserIdAndDate(usersMapper.findUserIdByUsername(user.getUserName()));
         List<Map<String, Integer>> selectMap = selectQuestionMapper.countByUserIdAndDate(usersMapper.findUserIdByUsername(user.getUserName()));
         model.addAttribute("fillMap", fillMap);
-        model.addAttribute("judgeMap", judgeMap); 
+        model.addAttribute("judgeMap", judgeMap);
         model.addAttribute("selectMap", selectMap);
         //查找类别数量
         Integer fillCount = fillQuestionMapper.countByUserId(usersMapper.findUserIdByUsername(user.getUserName()));
         Integer judgeCount = judgeQuestionMapper.countByUserId(usersMapper.findUserIdByUsername(user.getUserName()));
-        Integer selectCount = selectQuestionMapper.countByUserId(usersMapper.findUserIdByUsername(user.getUserName()));
+        Integer selectCount = selectQuestionMapper.countByUserId(usersMapper.findUserIdByUsername(user.getUserName()));           
         Integer totalCount = fillCount + judgeCount + selectCount;
         model.addAttribute("fillCount", fillCount);
         model.addAttribute("judgeCount", judgeCount);

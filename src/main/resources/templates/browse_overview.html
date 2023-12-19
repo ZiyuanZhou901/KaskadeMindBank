@@ -197,11 +197,13 @@
                                 <div class="modal-footer no-margin-top text-center">
                                     <ul class="pagination no-margin align-middle">
                                         <button id="exportButton" class="btn bg-gradient-info"
-                                            style="margin-right: 10px;">Export</button>
+                                            style="margin-right: 10px;"><span class="btn-inner--icon"><i
+                                                    class="fa fa-envelope-open-o"></i></span> Export</button>
 
                                         <button class="btn bg-gradient-info dropdown-toggle" type="button"
-                                            id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                                            Show...
+                                            id="dropdownMenuButton" data-bs-toggle="dropdown"
+                                            aria-expanded="false"><span class="btn-inner--icon"><i
+                                                    class="fa fa-eye"></i></span> Show...
                                         </button>
                                         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                             <li><a class="dropdown-item" th:href="@{/browse?pageSize=10}">10</a></li>
