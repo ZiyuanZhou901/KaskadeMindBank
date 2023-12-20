@@ -461,18 +461,20 @@ public class ImportController {
                 i++;
                 currentFillQuestion.setAnswer(lines[i].split("：")[1]);
                 Integer flag=i+1;
-                String line1=lines[flag];
-                if (line1.startsWith("图片：")) {
-                    if (pictures.hasNext()) {
-                        XWPFPictureData picture = pictures.next();
-                        try {
-                            // 图片处理逻辑
-                            currentFillQuestion.setPicFile(processImage(picture));
-                        } catch (IOException e) {
-                            e.printStackTrace();
+                if(flag<lines.length){
+                    String line1=lines[flag];
+                    if (line1.startsWith("图片：")) {
+                        if (pictures.hasNext()) {
+                            XWPFPictureData picture = pictures.next();
+                            try {
+                                // 图片处理逻辑
+                                currentFillQuestion.setPicFile(processImage(picture));
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        } else {
+                            System.err.println("没有足够的图片用于处理: " + line);
                         }
-                    } else {
-                        System.err.println("没有足够的图片用于处理: " + line);
                     }
                 }
                 currentFillQuestion.setUserId(userId);
@@ -495,18 +497,20 @@ public class ImportController {
                     currentJudgeQuestion.setAnswer("incorrect");
                 }
                 Integer flag=i+1;
-                String line1=lines[flag];
-                if (line1.startsWith("图片：")) {
-                    if (pictures.hasNext()) {
-                        XWPFPictureData picture = pictures.next();
-                        try {
-                            // 图片处理逻辑
-                            currentJudgeQuestion.setPicFile(processImage(picture));
-                        } catch (IOException e) {
-                            e.printStackTrace();
+                if(flag<lines.length){
+                    String line1=lines[flag];
+                    if (line1.startsWith("图片：")) {
+                        if (pictures.hasNext()) {
+                            XWPFPictureData picture = pictures.next();
+                            try {
+                                // 图片处理逻辑
+                                currentJudgeQuestion.setPicFile(processImage(picture));
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        } else {
+                            System.err.println("没有足够的图片用于处理: " + line);
                         }
-                    } else {
-                        System.err.println("没有足够的图片用于处理: " + line);
                     }
                 }
                 currentJudgeQuestion.setUserId(userId);
@@ -535,18 +539,20 @@ public class ImportController {
                 i++;
                 currentSelectQuestion.setAnswer(lines[i].split("：")[1]);
                 Integer flag=i+1;
-                String line1=lines[flag];
-                if (line1.startsWith("图片：")) {
-                    if (pictures.hasNext()) {
-                        XWPFPictureData picture = pictures.next();
-                        try {
-                            // 图片处理逻辑
-                            currentSelectQuestion.setPicFile(processImage(picture));
-                        } catch (IOException e) {
-                            e.printStackTrace();
+                if (flag<lines.length){
+                    String line1=lines[flag];
+                    if (line1.startsWith("图片：")) {
+                        if (pictures.hasNext()) {
+                            XWPFPictureData picture = pictures.next();
+                            try {
+                                // 图片处理逻辑
+                                currentSelectQuestion.setPicFile(processImage(picture));
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        } else {
+                            System.err.println("没有足够的图片用于处理: " + line);
                         }
-                    } else {
-                        System.err.println("没有足够的图片用于处理: " + line);
                     }
                 }
                 currentSelectQuestion.setUserId(userId);
