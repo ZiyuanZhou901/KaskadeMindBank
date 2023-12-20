@@ -19,7 +19,7 @@ mybatis-plus:
     db-config:
       table-underline: false
   configuration:
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    log-impl: org.apache.ibatis.logging.nologging.NoLoggingImpl
     map-underscore-to-camel-case: false
 
 file:

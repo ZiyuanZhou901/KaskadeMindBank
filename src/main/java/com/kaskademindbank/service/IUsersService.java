@@ -13,4 +13,6 @@ public interface IUsersService extends IService<Users> {
     String login(Users user, Model model, HttpSession session);
 
     String register(Users user, Model model);
+
+    String edit(Users newuser, Model model, HttpSession session);
 }

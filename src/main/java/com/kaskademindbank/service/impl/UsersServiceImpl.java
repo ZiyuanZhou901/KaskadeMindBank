@@ -72,5 +72,26 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements
 
         return "login";
     }
+
+    @Override
+    public String edit(Users newuser, Model model, HttpSession session) {
+        String curName=session.getAttribute("username").toString();
+        Users user=usersMapper.findByUsername(curName);
+        String username = newuser.getUserName();
+        String password = newuser.getPassword();
+        String email = newuser.getEmail();
+        if (username.length() >=1) {
+            user.setUserName(username);
+        }
+        if (password.length()>=1) {
+            user.setPassword(password);
+        }
+        if (email.length()>=1) {
+            user.setEmail(email);
+        }
+        usersMapper.updateById(user);
+        session.setAttribute("user", user);
+        return "redirect:/profile";
+    }
 }
 

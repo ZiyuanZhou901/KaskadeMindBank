@@ -109,12 +109,37 @@
                 <nav aria-label="breadcrumb">
                     <h6 class="font-weight-bolder text-white mb-0">Hi~ <span th:text="${user.userName}"></span>
                     </h6>
+
                 </nav>
 
             </div>
         </nav>
         <!-- End Navbar -->
         <div class="container-fluid py-4">
+            <h6 class="font-weight-bolder text-white mb-0">Account Info</h6>
+            <form th:action="@{/users/edit}" th:object="${user}" method="post">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <input type="text" class="form-control" id="username" name="username" th:field="*{userName}"
+                                th:value="${user.userName}">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <input type="password" class="form-control" placeholder="Password" id="password"
+                                name="password" th:field="*{password}">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <input type="text" class="form-control" id="email" name="email" th:value="${email}">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn bg-gradient-secondary col-md-3">Commit Changes</button>
+                </div>
+
+            </form>
             <div class="row mt-0">
                 <div class="col-lg-6 mb-lg-0 mb-4">
                     <div class="card z-index-2 h-100">

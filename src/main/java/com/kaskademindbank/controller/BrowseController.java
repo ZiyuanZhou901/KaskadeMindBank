@@ -61,6 +61,7 @@ public class BrowseController {
     ISelectQuestionService selectQuestionService;
     @Value("${file.path}")
     private String uploadPath;
+
     @GetMapping("/browse")
     public String browseOverview(Model model, HttpSession session, @RequestParam(defaultValue = "1") int page,@RequestParam(defaultValue = "10") int pageSize) {
         Users user = (Users) session.getAttribute("user");

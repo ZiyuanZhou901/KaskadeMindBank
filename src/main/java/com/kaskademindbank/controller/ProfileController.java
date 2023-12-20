@@ -47,6 +47,9 @@ public class ProfileController {
         //查找上传的科目和对应数量
         List<Map<String, Object>> subjects = selectQuestionMapper.countQuestionsBySubject(usersMapper.findUserIdByUsername(user.getUserName()));
         model.addAttribute("subjects", subjects);
+        model.addAttribute("newUser",new Users());
+        String email = usersMapper.findEmailByUsername(user.getUserName());
+        model.addAttribute("email",email);
         return "profile";
     }
 

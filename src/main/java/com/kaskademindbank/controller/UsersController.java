@@ -51,4 +51,12 @@ public class UsersController {
         return usersService.register(user,model);
     }
 
+    @PostMapping("/edit")
+    public String edit(Users newuser, Model model, HttpSession session) {
+        Users user = (Users) session.getAttribute("user");
+        model.addAttribute("user", user);
+        session.setAttribute("username", user.getUserName());
+        System.out.println(newuser.getUserName());
+        return usersService.edit(newuser,model,session);
+    }
 }
