@@ -26,7 +26,6 @@ import java.util.UUID;
 /**
  *
  * @author ZiyuanZhou
- * @since 2023-11-28
  */
 @Service
 public class FillQuestionServiceImpl extends ServiceImpl<FillQuestionMapper, FillQuestion> implements IFillQuestionService {
@@ -58,7 +57,7 @@ public class FillQuestionServiceImpl extends ServiceImpl<FillQuestionMapper, Fil
             return "template_import"; // 返回导入页面，显示错误消息
         }
 
-        // 2. 设置用户ID，你可能需要从 session 中获取用户信息
+        // 2. 设置用户ID
         Users user = (Users) session.getAttribute("user");
         if (user != null) {
             fillQuestion.setUserId(usersMapper.findUserIdByUsername(user.getUserName()));

@@ -27,7 +27,6 @@ import java.util.UUID;
 /**
  *
  * @author ZiyuanZhou
- * @since 2023-11-28
  */
 @Service
 public class SelectQuestionServiceImpl extends ServiceImpl<SelectQuestionMapper, SelectQuestion> implements ISelectQuestionService {
@@ -59,7 +58,7 @@ public class SelectQuestionServiceImpl extends ServiceImpl<SelectQuestionMapper,
             return "template_import";  // 返回导入页面，显示错误消息
         }
 
-        // 2. 设置用户ID，你可能需要从 session 中获取用户信息
+        // 2. 设置用户ID
         Users user = (Users) session.getAttribute("user");
         if (user != null) {
             selectQuestion.setUserId(usersMapper.findUserIdByUsername(user.getUserName()));

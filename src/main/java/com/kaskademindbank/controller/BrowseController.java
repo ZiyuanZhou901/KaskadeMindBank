@@ -353,9 +353,7 @@ public class BrowseController {
     // 插入图片到文档中
     private void insertImage(XWPFDocument document, String picPath) {
         try {
-            // 图片存储在项目根目录下的一级目录upload
             byte[] bytes = Files.readAllBytes(Path.of(uploadPath, picPath));
-
 
             // 使用 Apache Tika 获取文件的真实类型
             Tika tika = new Tika();

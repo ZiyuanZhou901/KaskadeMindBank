@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
 /**
  *
  * @author ZiyuanZhou
- * @since 2023-11-28
  */
 public class FillQuestion implements Serializable {
 

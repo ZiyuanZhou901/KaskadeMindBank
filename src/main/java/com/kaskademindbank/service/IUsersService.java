@@ -8,7 +8,6 @@ import org.springframework.ui.Model;
 /**
  *
  * @author ZiyuanZhou
- * @since 2023-11-28
  */
 public interface IUsersService extends IService<Users> {
     String login(Users user, Model model, HttpSession session);

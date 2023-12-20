@@ -10,12 +10,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * <p>
- *  Mapper 接口
- * </p>
  *
  * @author ZiyuanZhou
- * @since 2023-11-28
  */
 @Mapper
 public interface JudgeQuestionMapper extends BaseMapper<JudgeQuestion> {

@@ -9,7 +9,6 @@ import org.apache.ibatis.annotations.Select;
 /**
  *
  * @author ZiyuanZhou
- * @since 2023-11-28
  */
 @Mapper
 public interface UsersMapper extends BaseMapper<Users> {

@@ -420,9 +420,7 @@ public class ImportController {
         Users user = (Users) session.getAttribute("user");
         userId=usersMapper.findUserIdByUsername(user.getUserName());
         try {
-            // Check if the uploaded file is not empty
-            if (!wordFile.isEmpty()) { 
-                // Read the content of the Word file
+            if (!wordFile.isEmpty()) {
                 InputStream inputStream = wordFile.getInputStream();
                 XWPFDocument document = new XWPFDocument(inputStream);
                 XWPFWordExtractor extractor = new XWPFWordExtractor(document);
@@ -433,11 +431,8 @@ public class ImportController {
 
                 extractor.close();
                 inputStream.close();
-
-                // Add a success message to the model
                 session.setAttribute("successMessage", "Word File imported successfully!");
             } else {
-                // Add an error message to the model if the file is empty
                 model.addAttribute("errorMessage", "File is empty!");
             }
         } catch (IOException e) {
@@ -445,9 +440,7 @@ public class ImportController {
             e.printStackTrace();
             model.addAttribute("errorMessage", "Error processing the file!");
         }
-        // Add user attribute to the model
         model.addAttribute("user", session.getAttribute("user"));
-        // Redirect to the import page
         return "redirect:/import";
     }
     private void processWordContent(String textContent, Integer userId, XWPFDocument document) {

@@ -6,12 +6,8 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * <p>
- * 
- * </p>
  *
  * @author ZiyuanZhou
- * @since 2023-11-28
  */
 public class JudgeQuestion implements Serializable {
 

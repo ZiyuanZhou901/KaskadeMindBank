@@ -5,6 +5,9 @@ import lombok.Setter;
 
 import java.util.List;
 
+/**
+ * @author ZiyuanZhou
+ */
 public class SelectedItem {
     @Getter
     @Setter
