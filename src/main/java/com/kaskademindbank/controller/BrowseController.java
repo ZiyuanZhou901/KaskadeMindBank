@@ -15,6 +15,13 @@ import com.kaskademindbank.service.ISelectQuestionService;
 import com.kaskademindbank.vo.QuestionOverview;
 import com.kaskademindbank.vo.SelectedItem;
 import jakarta.servlet.http.HttpSession;
+import org.apache.batik.transcoder.Transcoder;
+import org.apache.batik.transcoder.TranscoderException;
+import org.apache.batik.transcoder.TranscoderInput;
+import org.apache.batik.transcoder.TranscoderOutput;
+import org.apache.batik.transcoder.image.ImageTranscoder;
+import org.apache.batik.transcoder.image.PNGTranscoder;
+import org.apache.batik.constants.XMLConstants;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.util.Units;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
@@ -28,8 +35,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.apache.batik.transcoder.image.ImageTranscoder;
 
 import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -356,18 +365,31 @@ public class BrowseController {
         try {
             byte[] bytes = Files.readAllBytes(Path.of(uploadPath, picPath));
 
-            // 使用 Apache Tika 获取文件的真实类型
             Tika tika = new Tika();
             String mimeType = tika.detect(bytes);
-
-            // 根据文件类型设置格式
             int format;
+
             if (mimeType.startsWith("image/jpeg")) {
                 format = XWPFDocument.PICTURE_TYPE_JPEG;
             } else if (mimeType.startsWith("image/png")) {
                 format = XWPFDocument.PICTURE_TYPE_PNG;
+            } else if (mimeType.startsWith("image/gif")) {
+                format = XWPFDocument.PICTURE_TYPE_GIF;
+            } else if (mimeType.startsWith("image/bmp")) {
+                format = XWPFDocument.PICTURE_TYPE_BMP;
+            } else if (mimeType.startsWith("image/tiff") || mimeType.startsWith("image/tif")) {
+                format = XWPFDocument.PICTURE_TYPE_TIFF;
+            } else if (mimeType.startsWith("image/svg+xml")) {
+                BufferedImage bufferedImage = convertSvgToBufferedImage(bytes);
+                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                ImageIO.write(bufferedImage, "png", outputStream);
+                bytes = outputStream.toByteArray();
+                format = XWPFDocument.PICTURE_TYPE_PNG;
+            } else if (mimeType.startsWith("application/postscript")) {
+                format = XWPFDocument.PICTURE_TYPE_EPS;
             } else {
-                format = XWPFDocument.PICTURE_TYPE_JPEG;
+                System.err.println("不支持的图片格式: " + mimeType);
+                return;
             }
 
             int originalWidth = ImageIO.read(new ByteArrayInputStream(bytes)).getWidth();
@@ -376,7 +398,6 @@ public class BrowseController {
             int scaledWidth = 300;
             int scaledHeight = (int) (originalHeight * scale);
             document.createParagraph().createRun().addPicture(new ByteArrayInputStream(bytes), format, "image", Units.toEMU(scaledWidth), Units.toEMU(scaledHeight));
-            // 添加换行
             document.createParagraph().createRun().addBreak();
         } catch (IOException e) {
             e.printStackTrace();
@@ -384,5 +405,22 @@ public class BrowseController {
             throw new RuntimeException(e);
         }
     }
+
+    private BufferedImage convertSvgToBufferedImage(byte[] svgBytes) throws IOException {
+        TranscoderInput input = new TranscoderInput(new ByteArrayInputStream(svgBytes));
+        PNGTranscoder transcoder = new PNGTranscoder();
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        transcoder.addTranscodingHint(PNGTranscoder.KEY_WIDTH, 300f);
+        transcoder.addTranscodingHint(PNGTranscoder.KEY_HEIGHT, 300f);
+        TranscoderOutput output = new TranscoderOutput(outputStream);
+
+        try {
+            transcoder.transcode(input, output);
+            return ImageIO.read(new ByteArrayInputStream(outputStream.toByteArray()));
+        } catch (TranscoderException e) {
+            throw new IOException("Failed to convert SVG to BufferedImage", e);
+        }
+    }
+
 
 }
