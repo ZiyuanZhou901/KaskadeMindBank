@@ -42,6 +42,10 @@ public class SelectQuestionServiceImpl extends ServiceImpl<SelectQuestionMapper,
         String filePath = Paths.get(uploadPath, fileName).toString();
         file.transferTo(new File(filePath));
     }
+    private String getFileExtension(String fileName) {
+        int dotIndex = fileName.lastIndexOf('.');
+        return (dotIndex == -1) ? "" : fileName.substring(dotIndex);
+    }
     @Override
     public String importByTemplate(SelectQuestion selectQuestion,Model model, HttpSession session,
                                    @RequestParam("imageFile") MultipartFile imageFile,
@@ -67,17 +71,20 @@ public class SelectQuestionServiceImpl extends ServiceImpl<SelectQuestionMapper,
         selectQuestion.setUpTime(LocalDateTime.now());
         try {
             if (!imageFile.isEmpty()) {
-                String imageFileName = "image_" + UUID.randomUUID() + ".jpg";
+                String originalImageFileName = imageFile.getOriginalFilename();
+                String imageFileName = "image_" + UUID.randomUUID() + getFileExtension(originalImageFileName);
                 handleFileUpload(imageFile, imageFileName);
                 selectQuestion.setPicFile(imageFileName);
             }
             if (!audioFile.isEmpty()) {
-                String audioFileName = "audio_" + UUID.randomUUID() + ".mp3";
+                String originalAudioFileName = audioFile.getOriginalFilename();
+                String audioFileName = "audio_" + UUID.randomUUID() + getFileExtension(originalAudioFileName);
                 handleFileUpload(audioFile, audioFileName);
                 selectQuestion.setVoiFile(audioFileName);
             }
             if (!videoFile.isEmpty()) {
-                String videoFileName = "video_" + UUID.randomUUID() + ".mp4";
+                String originalVideoFileName = videoFile.getOriginalFilename();
+                String videoFileName = "video_" + UUID.randomUUID() + getFileExtension(originalVideoFileName);
                 handleFileUpload(videoFile, videoFileName);
                 selectQuestion.setVidFile(videoFileName);
             }
@@ -112,7 +119,8 @@ public class SelectQuestionServiceImpl extends ServiceImpl<SelectQuestionMapper,
         existingQuestion.setAnswer(selectQuestion.getAnswer());
         try {
             if (!imageFile.isEmpty()) {
-                String imageFileName = "image_" + UUID.randomUUID() + ".jpg";
+                String originalImageFileName = imageFile.getOriginalFilename();
+                String imageFileName = "image_" + UUID.randomUUID() + getFileExtension(originalImageFileName);
                 handleFileUpload(imageFile, imageFileName);
                 if (existingQuestion.getPicFile() != null) {
                     File file = new File(Paths.get(uploadPath, existingQuestion.getPicFile()).toString());
@@ -165,7 +173,8 @@ public class SelectQuestionServiceImpl extends ServiceImpl<SelectQuestionMapper,
         selectQuestion.setUpTime(LocalDateTime.now());
         try {
             if (!imageFile.isEmpty()) {
-                String imageFileName = "image_" + UUID.randomUUID() + ".jpg";
+                String originalImageFileName = imageFile.getOriginalFilename();
+                String imageFileName = "image_" + UUID.randomUUID() + getFileExtension(originalImageFileName);
                 handleFileUpload(imageFile, imageFileName);
                 selectQuestion.setPicFile(imageFileName);
             }

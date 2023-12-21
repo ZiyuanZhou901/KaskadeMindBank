@@ -43,7 +43,10 @@ public class FillQuestionServiceImpl extends ServiceImpl<FillQuestionMapper, Fil
         String filePath = Paths.get(uploadPath, fileName).toString();
         file.transferTo(new File(filePath));
     }
-
+    private String getFileExtension(String fileName) {
+        int dotIndex = fileName.lastIndexOf('.');
+        return (dotIndex == -1) ? "" : fileName.substring(dotIndex);
+    }
     @Override
     public String importByTemplate(FillQuestion fillQuestion, Model model, HttpSession session,
                                    @RequestParam("imageFile") MultipartFile imageFile,
@@ -69,17 +72,20 @@ public class FillQuestionServiceImpl extends ServiceImpl<FillQuestionMapper, Fil
         // 4. 处理文件上传
         try {
             if (!imageFile.isEmpty()) {
-                String imageFileName = "image_" + UUID.randomUUID() + ".jpg";
+                String originalImageFileName = imageFile.getOriginalFilename();
+                String imageFileName = "image_" + UUID.randomUUID() + getFileExtension(originalImageFileName);
                 handleFileUpload(imageFile, imageFileName);
                 fillQuestion.setPicFile(imageFileName);
             }
             if (!audioFile.isEmpty()) {
-                String audioFileName = "audio_" + UUID.randomUUID() + ".mp3";
+                String originalAudioFileName = audioFile.getOriginalFilename();
+                String audioFileName = "audio_" + UUID.randomUUID() + getFileExtension(originalAudioFileName);
                 handleFileUpload(audioFile, audioFileName);
                 fillQuestion.setVoiFile(audioFileName);
             }
             if (!videoFile.isEmpty()) {
-                String videoFileName = "video_" + UUID.randomUUID() + ".mp4";
+                String originalVideoFileName = videoFile.getOriginalFilename();
+                String videoFileName = "video_" + UUID.randomUUID() + getFileExtension(originalVideoFileName);
                 handleFileUpload(videoFile, videoFileName);
                 fillQuestion.setVidFile(videoFileName);
             }
@@ -117,7 +123,8 @@ public class FillQuestionServiceImpl extends ServiceImpl<FillQuestionMapper, Fil
         fillQuestion.setUpTime(LocalDateTime.now());
         try {
             if (!imageFile.isEmpty()) {
-                String imageFileName = "image_" + UUID.randomUUID() + ".jpg";
+                String originalImageFileName = imageFile.getOriginalFilename();
+                String imageFileName = "image_" + UUID.randomUUID() + getFileExtension(originalImageFileName);
                 handleFileUpload(imageFile, imageFileName);
                 fillQuestion.setPicFile(imageFileName);
             }
@@ -155,7 +162,8 @@ public class FillQuestionServiceImpl extends ServiceImpl<FillQuestionMapper, Fil
         existingQuestion.setAnswer(fillQuestion.getAnswer());
         try {
             if (!imageFile.isEmpty()) {
-                String imageFileName = "image_" + UUID.randomUUID() + ".jpg";
+                String originalImageFileName = imageFile.getOriginalFilename();
+                String imageFileName = "image_" + UUID.randomUUID() + getFileExtension(originalImageFileName);
                 handleFileUpload(imageFile, imageFileName);
                 if (existingQuestion.getPicFile()!=null){
                     File file = new File(uploadPath+existingQuestion.getPicFile());

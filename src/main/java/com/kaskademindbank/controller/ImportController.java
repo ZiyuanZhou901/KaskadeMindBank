@@ -436,7 +436,6 @@ public class ImportController {
                 model.addAttribute("errorMessage", "File is empty!");
             }
         } catch (IOException e) {
-
             e.printStackTrace();
             model.addAttribute("errorMessage", "Error processing the file!");
         }
