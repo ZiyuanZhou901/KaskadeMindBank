@@ -16,6 +16,7 @@ import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
 import org.apache.poi.xwpf.usermodel.*;
+import org.apache.xmlbeans.impl.tool.Diff;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -325,7 +326,9 @@ public class ImportController {
             fillQuestion.setAnswer(answer);
             fillQuestion.setUserId(userId);
             fillQuestion.setUpTime(LocalDateTime.now());
-            fillQuestionMapper.insert(fillQuestion);
+            if(subject!=null&&description!=null&&answer!=null) {
+                fillQuestionMapper.insert(fillQuestion);
+            }
         }
     }
 
@@ -357,7 +360,9 @@ public class ImportController {
                 judgeQuestion.setAnswer(answer);
                 judgeQuestion.setUserId(userId);
                 judgeQuestion.setUpTime(LocalDateTime.now());
-                judgeQuestionMapper.insert(judgeQuestion);
+                if (subject!=null&&description!=null&&answer!=null) {
+                    judgeQuestionMapper.insert(judgeQuestion);
+                }
             }
         }
     }
@@ -393,7 +398,9 @@ public class ImportController {
             selectQuestion.setAnswer(answer);
             selectQuestion.setUserId(userId);
             selectQuestion.setUpTime(LocalDateTime.now());
-            selectQuestionMapper.insert(selectQuestion);
+            if(subject!=null&&description!=null&&optionA!=null&&optionB!=null&&optionC!=null&&optionD!=null&&answer!=null) {
+                selectQuestionMapper.insert(selectQuestion);
+            }
         }
     }
 
